@@ -56,4 +56,6 @@ if [ ! -z "$HAPROXY_LETSENCRYPT_RENEW" ] || [ ! -z "$HAPROXY_LETSENCRYPT_OCSP" ]
 	crond -c /usr/local/etc/cron.d
 fi
 
+mkdir -p /etc/haproxy/letsencrypt
+
 exec "$@"
