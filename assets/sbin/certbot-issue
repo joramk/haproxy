@@ -1,0 +1,15 @@
+#!/bin/bash
+if [ -z "$1" ] || [ -z "$2" ]; then
+	echo Usage: certbot-issue domain.tld email@address
+	exit 2
+fi
+
+certbot certonly \
+	--non-interactive \
+	--agree-tos \
+	--standalone \
+	--rsa-key-size 4096 \
+	--preferred-challenges http-01 \
+	--http-01-port=8888 \
+	--post-hook="/usr/local/sbin/certbot-posthook" \
+	--domain $1 --email $2

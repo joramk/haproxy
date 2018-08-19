@@ -1,0 +1,20 @@
+#!/bin/bash
+
+#
+# Create HAProxy compatible chained certificate files
+# with private key attached.
+#
+
+for dir in $(ls -d /etc/letsencrypt/live/*); do
+        cat $dir/privkey.pem $dir/fullchain.pem > $dir/fullkeychain.pem
+done
+
+
+#
+# Reload HAProxy configuartion now if container is already fully initialized
+# and no daily reload is scheduled afterwards.
+#
+
+if [ -f /.env-haproxy-daily-reload ]; then
+	systemctl reload haproxy
+fi
