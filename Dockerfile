@@ -1,10 +1,13 @@
 FROM		python:alpine3.8 AS build
 
+ENV		HAPROXY_MAJOR	1.8
+ENV		HAPROXY_VERSION	1.8.13
+ENV		OPENSSL_VERSION	1.1.1-pre8
+
 RUN		{	apk --no-cache --update --virtual build-dependencies add \
 				libffi-dev \
 				libxml2-dev \
 				libxslt-dev \
-				openssl-dev \
 				python-dev \
 				build-base \
 				git \
@@ -15,24 +18,23 @@ RUN		{	apk --no-cache --update --virtual build-dependencies add \
 				pcre-dev \
 				wget \
 				tar ; \
-			pip install certbot ; \
 		}
 
 WORKDIR		/usr/src
 
-RUN		{	wget https://www.openssl.org/source/openssl-1.1.1-pre8.tar.gz ; \
-			tar xvzf openssl-1.1.1-pre8.tar.gz ; \
-			wget https://www.haproxy.org/download/1.8/src/haproxy-1.8.13.tar.gz ; \
-			tar xvzf haproxy-1.8.13.tar.gz ; \
+RUN		{	wget https://www.openssl.org/source/openssl-$OPENSSL_VERSION.tar.gz ; \
+			tar xvzf openssl-$OPENSSL_VERSION.tar.gz ; \
+			wget https://www.haproxy.org/download/$HAPROXY_MAJOR/src/haproxy-$HAPROXY_VERSION.tar.gz ; \
+			tar xvzf haproxy-$HAPROXY_VERSION.tar.gz ; \
 		}
 
-RUN		{	cd openssl-1.1.1-pre8 \
+RUN		{	cd openssl-$OPENSSL_VERSION \
 			&& ./config no-async enable-tls1_3 \
 			&& make all \
 			&& make install_sw ; \
 		}
 
-RUN             {	cd haproxy-1.8.13 \ 
+RUN             {	cd haproxy-$HAPROXY_VERSION \ 
                         && make all TARGET=linux2628 \  
                                 USE_LUA=1 LUA_INC=/usr/include/lua5.3 LUA_LIB=/usr/lib/lua5.3 \
                                 USE_OPENSSL=1 SSL_INC=/usr/local/include SSL_LIB=/usr/local/lib \
@@ -40,7 +42,8 @@ RUN             {	cd haproxy-1.8.13 \
                         && make install ; \    
                 }
 
-RUN		{	rm -rf  /usr/local/share \
+RUN		{	pip install certbot ; \
+			rm -rf  /usr/local/share \
 				/usr/local/lib/perl5 \
 				/usr/local/include/openssl ; \
 		}
