@@ -3,12 +3,14 @@ ARG             HAPROXY_MAJOR=1.8
 ARG             HAPROXY_VERSION=1.8.13
 ARG             OPENSSL_VERSION=1.1.1-pre8
 ARG		ALPINE_VERSION=3.8
+ARG		CERTBOT_VERSION=0.26.1
 
 FROM		python:alpine$ALPINE_VERSION AS build
 ARG		HAPROXY_BRANCH
 ARG		HAPROXY_MAJOR
 ARG		HAPROXY_VERSION
 ARG		OPENSSL_VERSION
+ARG		CERTBOT_VERSION
 
 RUN		{	apk --no-cache --update --virtual build-dependencies add \
 				libffi-dev \
