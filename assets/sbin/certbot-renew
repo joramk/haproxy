@@ -1,5 +1,5 @@
 #!/bin/bash
-if [ -f /.env-haproxy-letsencrypt ]; then
+if [ -f /.env-haproxy-letsencrypt-renew ]; then
         /usr/bin/certbot renew \
 		--preferred-challenges http-01 \
 		--rsa-key-size 4096 \

@@ -54,6 +54,7 @@ COPY			assets		/usr/local
 RUN		{	apk --no-cache --update add libffi lua5.3 pcre openssl expat incron bash zlib ; \
 			mkdir -p /usr/local/etc/haproxy /etc/letsencrypt ; \
 			touch /usr/local/etc/haproxy/haproxy.cfg ; \
+			chmod +x /usr/local/sbin/* ; \
 			rm -rf /var/cache/apk/* ; \
 		}
 

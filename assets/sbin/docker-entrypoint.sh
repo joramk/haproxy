@@ -53,7 +53,7 @@ if [ ! -z "$HAPROXY_INCROND" ] || [ ! -z "$HAPROXY_LETSENCRYPT_INCROND" ]; then
 fi
 
 if [ ! -z "$HAPROXY_LETSENCRYPT_RENEW" ] || [ ! -z "$HAPROXY_LETSENCRYPT_OCSP" ]; then
-	crond
+	crond -c /usr/local/etc/cron.d
 fi
 
 exec "$@"
