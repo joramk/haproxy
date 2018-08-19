@@ -14,13 +14,13 @@ fi
 
 # Reload HAProxy when config changes
 if [ ! -z "$HAPROXY_INCROND" ]; then
-	echo "/etc/haproxy IN_MODIFY,IN_NO_LOOP kill -HUP `pidof haproxy`" >/etc/incron.d/haproxy
+	echo "/etc/haproxy IN_MODIFY,IN_NO_LOOP kill -HUP 1" >/etc/incron.d/haproxy
 fi
 
 # Reload HAProxy when certificate or OCSP information changes
 if [ ! -z "$HAPROXY_LETSENCRYPT_INCROND" ]; then
-	echo "/etc/letsencrypt/live/*/fullkeychain.pem IN_MODIFY,IN_NO_LOOP kill -HUP `pidof haproxy`" >/etc/incron.d/letsencrypt
-	echo "/etc/letsencrypt/live/*/fullkeychain.pem.ocsp IN_MODIFY,IN_NO_LOOP kill -HUP `pidof haproxy`" >/etc/incron.d/letsencrypt-ocsp
+	echo "/etc/letsencrypt/live/*/fullkeychain.pem IN_MODIFY,IN_NO_LOOP kill -HUP 1" >/etc/incron.d/letsencrypt
+	echo "/etc/letsencrypt/live/*/fullkeychain.pem.ocsp IN_MODIFY,IN_NO_LOOP kill -HUP 1" >/etc/incron.d/letsencrypt-ocsp
 fi
 
 # Issue certificates for given domains if no certificate already exists
