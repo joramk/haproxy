@@ -48,7 +48,7 @@ RUN             {	cd haproxy-$HAPROXY_VERSION \
                         && make install ; \    
                 }
 
-RUN		{	pip install certbot ; \
+RUN		{	pip install "certbot==$CERTBOT_VERSION" ; \
 			rm -rf  /usr/local/share \
 				/usr/local/lib/perl5 \
 				/usr/local/include/openssl ; \
