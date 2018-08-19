@@ -3,6 +3,7 @@ FROM		python:alpine3.8 AS build
 ENV		HAPROXY_MAJOR	1.8
 ENV		HAPROXY_VERSION	1.8.13
 ENV		OPENSSL_VERSION	1.1.1-pre8
+ENV		CERTBOT_VERSION	0.26.1
 
 RUN		{	apk --no-cache --update --virtual build-dependencies add \
 				libffi-dev \
@@ -42,7 +43,7 @@ RUN             {	cd haproxy-$HAPROXY_VERSION \
                         && make install ; \    
                 }
 
-RUN		{	pip install certbot ; \
+RUN		{	pip install "certbot==$CERTBOT_VERSION" ; \
 			rm -rf  /usr/local/share \
 				/usr/local/lib/perl5 \
 				/usr/local/include/openssl ; \
