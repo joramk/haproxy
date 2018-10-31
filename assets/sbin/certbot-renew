@@ -1,11 +1,16 @@
 #!/bin/bash
+
+if [ "$1" != "--no-posthook" ]; then
+	POSTHOOK="/usr/local/sbin/certbot-posthook"
+else
+	shift 1
+fi
+
 if [ -f /.env-haproxy-letsencrypt-renew ]; then
         certbot renew --reuse-key \
 		--preferred-challenges http-01 \
 		--rsa-key-size 4096 \
 		--http-01-port=8888 \
-		--post-hook="/usr/local/sbin/certbot-posthook" \
+		--post-hook "$POSTHOOK" \
 		"$@"
-else
-        exit 2
 fi

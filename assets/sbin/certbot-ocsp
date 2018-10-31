@@ -1,21 +1,15 @@
 #!/bin/bash
-if [ ! -f /.env-haproxy-letsencrypt ] || [ ! -f /.env-haproxy-letsencrypt-ocsp ]; then
-	exit 2
+if [ -f /.env-haproxy-letsencrypt ] && [ -f /.env-haproxy-letsencrypt-ocsp ]; then
+	LE_PATH=/etc/letsencrypt/live
+	for OCSP_DOMAIN in $LE_PATH/*; do
+	 openssl ocsp -no_nonce -respout /etc/haproxy/letsencrypt/`basename ${OCSP_DOMAIN}`.pem.ocsp \
+	  -issuer ${OCSP_DOMAIN}/chain.pem \
+	  -verify_other ${OCSP_DOMAIN}/chain.pem \
+	  -cert ${OCSP_DOMAIN}/cert.pem \
+	  -url http://ocsp.int-x3.letsencrypt.org/4 \
+	  -header "HOST=ocsp.int-x3.letsencrypt.org" 2>/dev/null
+	 if [ "$1" != "--fetch-only" ]; then
+	  echo "set ssl ocsp-response $(base64 -w0 /etc/haproxy/letsencrypt/`basename ${OCSP_DOMAIN}`.pem.ocsp)" | /usr/bin/socat stdio /var/run/haproxy.admin
+	 fi
+	done
 fi
-
-LE_PATH=/etc/letsencrypt/live
-
-for OCSP_DOMAIN in $LE_PATH/*; do
- openssl ocsp -no_nonce -respout /etc/haproxy/letsencrypt/`basename ${OCSP_DOMAIN}`.pem.ocsp \
-  -issuer ${OCSP_DOMAIN}/chain.pem \
-  -verify_other ${OCSP_DOMAIN}/chain.pem \
-  -cert ${OCSP_DOMAIN}/cert.pem \
-  -url http://ocsp.int-x3.letsencrypt.org/4 \
-  -header "HOST=ocsp.int-x3.letsencrypt.org" 2>/dev/null
- if [ "$1" != "--fetch-only" ]; then
-  echo "set ssl ocsp-response $(base64 -w0 /etc/haproxy/letsencrypt/`basename ${OCSP_DOMAIN}`.pem.ocsp)" | /usr/bin/socat stdio /var/run/haproxy.admin
- fi
-done
-
-exit 0
-

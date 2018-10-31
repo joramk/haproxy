@@ -42,7 +42,6 @@ fi
 
 if [ ! -z "$HAPROXY_LETSENCRYPT_RENEW" ]; then
         touch /.env-haproxy-letsencrypt-renew
-        /usr/local/sbin/certbot-renew
 fi
 
 if [ ! -z "$HAPROXY_LETSENCRYPT_OCSP" ]; then
