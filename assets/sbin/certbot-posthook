@@ -9,4 +9,6 @@ for dir in $(ls -d /etc/letsencrypt/live/*); do
         cat $dir/privkey.pem $dir/fullchain.pem > /etc/haproxy/letsencrypt/`basename $dir`.pem
 done
 
-kill -HUP 1
+if [ "$1" != "--no-reload" ]; then
+	kill -HUP 1
+fi
