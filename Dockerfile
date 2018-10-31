@@ -1,10 +1,16 @@
-FROM		python:alpine3.8 AS build
+ARG		HAPROXY_BRANCH	devel
+ARG		HAPROXY_MAJOR	1.9
+ARG		HAPROXY_VERSION	1.9-dev5
+ARG		OPENSSL_VERSION	1.1.1
+ARG		ALPINE_VERSION=3.8
+ARG		CERTBOT_VERSION	0.27.1
 
-ENV		HAPROXY_BRANCH	devel
-ENV		HAPROXY_MAJOR	1.9
-ENV		HAPROXY_VERSION	1.9-dev5
-ENV		OPENSSL_VERSION	1.1.1
-ENV		CERTBOT_VERSION	0.27.1
+FROM		python:alpine$ALPINE_VERSION AS build
+ARG		HAPROXY_BRANCH
+ARG		HAPROXY_MAJOR
+ARG		HAPROXY_VERSION
+ARG		OPENSSL_VERSION
+ARG		CERTBOT_VERSION
 
 RUN		{	apk --no-cache --update --virtual build-dependencies add \
 				libffi-dev \
@@ -51,10 +57,20 @@ RUN		{	pip install "certbot==$CERTBOT_VERSION" ; \
 		}
 
 
-FROM 		alpine:3.8
+FROM 		alpine:$ALPINE_VERSION
+ARG		HAPROXY_VERSION
+ARG 		BUILD_DATE
+ARG 		VCS_REF
 MAINTAINER	Joram Knaack <joramk@gmail.com>
-
-ENV 		container           docker
+LABEL 		org.label-schema.build-date=$BUILD_DATE \
+      		org.label-schema.vcs-url="https://github.com/joramk/haproxy.git" \
+      		org.label-schema.vcs-ref=$VCS_REF \
+      		org.label-schema.schema-version="1.0.0-rc1" \
+		org.label-schema.name="HAProxy $HAPROXY_VERSION" \
+		org.label-schema.description="HAProxy $HAPROXY_VERSION with TLSv1.3" \
+		org.label-schema.vendor="Joram Knaack" \
+		org.label-schema.docker.cmd="docker run -d -p 80:80 -p 443:443 -v haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg joramk/haproxy"
+ENV 		container docker
 
 COPY --from=build	/usr/local 	/usr/local
 COPY			assets		/usr/local
@@ -80,5 +96,6 @@ RUN		{	apk --no-cache --update add \
 EXPOSE			80 443
 HEALTHCHECK CMD		kill -0 1 || exit 1
 STOPSIGNAL		SIGUSR1
+VOLUME			[ "/etc/haproxy", "/etc/letsencrypt" ]
 ENTRYPOINT		[ "docker-entrypoint.sh" ]
-CMD 			[ "haproxy", "-W", "-f", "/usr/local/etc/haproxy/haproxy.cfg" ]
+CMD 			[ "haproxy", "-V", "-W", "-f", "/usr/local/etc/haproxy/haproxy.cfg" ]

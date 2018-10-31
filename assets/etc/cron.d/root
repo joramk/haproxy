@@ -1,0 +1,2 @@
+11 4 * * * /usr/local/sbin/certbot-renew >/dev/null
+11 5 * * * /usr/local/sbin/certbot-ocsp  >/dev/null

@@ -40,12 +40,13 @@ if [ ! -z "$HAPROXY_LETSENCRYPT" ]; then
 	done
 fi
 
-if [ ! -z "$HAPROXY_LETSENCRYPT_OCSP" ]; then
-	touch /.env-haproxy-letsencrypt-ocsp
+if [ ! -z "$HAPROXY_LETSENCRYPT_RENEW" ]; then
+        touch /.env-haproxy-letsencrypt-renew
 fi
 
-if [ ! -z "$HAPROXY_LETSENCRYPT_RENEW" ]; then
-	touch /.env-haproxy-letsencrypt-renew
+if [ ! -z "$HAPROXY_LETSENCRYPT_OCSP" ]; then
+	touch /.env-haproxy-letsencrypt-ocsp
+	/usr/local/sbin/certbot-ocsp --fetch-only
 fi
 
 if [ ! -z "$HAPROXY_INCROND" ] || [ ! -z "$HAPROXY_LETSENCRYPT_INCROND" ]; then
@@ -55,5 +56,7 @@ fi
 if [ ! -z "$HAPROXY_LETSENCRYPT_RENEW" ] || [ ! -z "$HAPROXY_LETSENCRYPT_OCSP" ]; then
 	crond -c /usr/local/etc/cron.d
 fi
+
+mkdir -p /etc/haproxy/letsencrypt
 
 exec "$@"
