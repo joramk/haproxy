@@ -19,8 +19,8 @@ fi
 
 # Reload HAProxy when certificate or OCSP information changes
 if [ ! -z "$HAPROXY_LETSENCRYPT_INCROND" ]; then
-	echo "/etc/letsencrypt/live/*/fullkeychain.pem IN_MODIFY,IN_NO_LOOP kill -HUP 1" >/etc/incron.d/letsencrypt
-	echo "/etc/letsencrypt/live/*/fullkeychain.pem.ocsp IN_MODIFY,IN_NO_LOOP kill -HUP 1" >/etc/incron.d/letsencrypt-ocsp
+	echo "/etc/haproxy/letsencrypt/*.pem IN_MODIFY,IN_NO_LOOP kill -HUP 1" >/etc/incron.d/letsencrypt
+	echo "/etc/haproxy/letsencrypt/*.pem.ocsp IN_MODIFY,IN_NO_LOOP kill -HUP 1" >/etc/incron.d/letsencrypt-ocsp
 fi
 
 # Issue certificates for given domains if no certificate already exists
@@ -34,7 +34,7 @@ if [ ! -z "$HAPROXY_LETSENCRYPT" ]; then
 	done
 	for entry in "${domains[@]}"; do
        		array=(${entry//,/ })
-		if [ ! -e "/etc/letsencrypt/live/${array[0]}/fullkeychain.pem" ]; then
+		if [ ! -e "/etc/letsencrypt/live/${array[0]}/cert.pem" ]; then
 	       		/usr/local/sbin/certbot-issue ${array[@]}
 		fi
 	done
