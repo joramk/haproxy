@@ -2,9 +2,9 @@ FROM		python:alpine3.8 AS build
 
 ENV		HAPROXY_BRANCH	devel
 ENV		HAPROXY_MAJOR	1.9
-ENV		HAPROXY_VERSION	1.9-dev1
-ENV		OPENSSL_VERSION	1.1.1-pre8
-ENV		CERTBOT_VERSION	0.26.1
+ENV		HAPROXY_VERSION	1.9-dev5
+ENV		OPENSSL_VERSION	1.1.1
+ENV		CERTBOT_VERSION	0.27.1
 
 RUN		{	apk --no-cache --update --virtual build-dependencies add \
 				libffi-dev \
