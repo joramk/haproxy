@@ -81,4 +81,4 @@ EXPOSE			80 443
 HEALTHCHECK CMD		kill -0 1 || exit 1
 STOPSIGNAL		SIGUSR1
 ENTRYPOINT		[ "docker-entrypoint.sh" ]
-CMD 			[ "haproxy", "-f", "/usr/local/etc/haproxy/haproxy.cfg" ]
+CMD 			[ "haproxy", "-W", "-f", "/usr/local/etc/haproxy/haproxy.cfg" ]
