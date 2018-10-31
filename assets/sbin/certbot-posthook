@@ -9,5 +9,4 @@ for dir in $(ls -d /etc/letsencrypt/live/*); do
         cat $dir/privkey.pem $dir/fullchain.pem > /etc/haproxy/letsencrypt/`basename $dir`.pem
 done
 
-# Kill PID 1 and let container restart
-kill -USR1 1
+kill -HUP 1
