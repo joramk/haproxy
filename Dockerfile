@@ -52,16 +52,13 @@ RUN             {	cd haproxy-$HAPROXY_VERSION \
                 }
 
 RUN		{	pip install "certbot==$CERTBOT_VERSION" ; \
+			cp hatop/bin/hatop /usr/local/bin ; \
 		}
 
 RUN		{	apk del build-dependencies ; \
 			rm -rf  /usr/local/share \
 				/usr/local/lib/perl5 \
 				/usr/local/include/openssl ; \
-		}
-
-RUN		{	cd hatop ; \
-			cp bin/hatop /usr/local/bin ; \
 		}
 
 
