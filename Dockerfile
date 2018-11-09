@@ -4,6 +4,7 @@ ARG             HAPROXY_VERSION=1.8.14
 ARG             OPENSSL_VERSION=1.1.1
 ARG		ALPINE_VERSION=3.8
 ARG		CERTBOT_VERSION=0.27.1
+ARG		HATOP_VERSION=0.7.7
 
 FROM		python:alpine$ALPINE_VERSION AS build
 ARG		HAPROXY_BRANCH
@@ -11,6 +12,7 @@ ARG		HAPROXY_MAJOR
 ARG		HAPROXY_VERSION
 ARG		OPENSSL_VERSION
 ARG		CERTBOT_VERSION
+ARG		HATOP_VERSION
 
 RUN		{	apk --no-cache --update --virtual build-dependencies add \
 				libffi-dev \
@@ -34,6 +36,7 @@ RUN		{	wget https://www.openssl.org/source/openssl-$OPENSSL_VERSION.tar.gz ; \
 			tar xvzf openssl-$OPENSSL_VERSION.tar.gz ; \
 			wget https://www.haproxy.org/download/$HAPROXY_MAJOR/src/$HAPROXY_BRANCH/haproxy-$HAPROXY_VERSION.tar.gz ; \
 			tar xvzf haproxy-$HAPROXY_VERSION.tar.gz ; \
+			git clone https://github.com/feurix/hatop.git ; \
 		}
 
 RUN		{	cd openssl-$OPENSSL_VERSION \
@@ -51,9 +54,16 @@ RUN             {	cd haproxy-$HAPROXY_VERSION \
                 }
 
 RUN		{	pip install "certbot==$CERTBOT_VERSION" ; \
+		}
+
+RUN		{	apk del build-dependencies ; \
 			rm -rf  /usr/local/share \
 				/usr/local/lib/perl5 \
 				/usr/local/include/openssl ; \
+		}
+
+RUN		{	cd hatop ; \
+			cp bin/hatop /usr/local/bin ; \
 		}
 
 
@@ -77,6 +87,7 @@ COPY			assets		/usr/local
 
 RUN		{	apk --no-cache --update add \
 				libffi \
+				python \
 				lua5.3 \
 				pcre \
 				expat \
