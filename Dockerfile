@@ -43,7 +43,9 @@ RUN		{	cd openssl-$OPENSSL_VERSION \
 			&& make install_sw ; \
 		}
 
+COPY		0001-Add-support-for-ciphersuites-option-for-TLS-1.3.patch /usr/src
 RUN             {	cd haproxy-$HAPROXY_VERSION \ 
+			&& patch -p1 < /usr/src/0001-Add-support-for-ciphersuites-option-for-TLS-1.3.patch \
                         && make all TARGET=linux2628 \  
                                 USE_LUA=1 LUA_INC=/usr/include/lua5.3 LUA_LIB=/usr/lib/lua5.3 \
                                 USE_OPENSSL=1 SSL_INC=/usr/local/include SSL_LIB=/usr/local/lib \
