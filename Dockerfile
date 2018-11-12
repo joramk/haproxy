@@ -34,6 +34,7 @@ RUN		{	wget https://www.openssl.org/source/openssl-$OPENSSL_VERSION.tar.gz ; \
 			tar xvzf openssl-$OPENSSL_VERSION.tar.gz ; \
 			wget https://www.haproxy.org/download/$HAPROXY_MAJOR/src/$HAPROXY_BRANCH/haproxy-$HAPROXY_VERSION.tar.gz ; \
 			tar xvzf haproxy-$HAPROXY_VERSION.tar.gz ; \
+			git clone https://github.com/feurix/hatop.git ; \
 		}
 
 RUN		{	cd openssl-$OPENSSL_VERSION \
@@ -42,7 +43,9 @@ RUN		{	cd openssl-$OPENSSL_VERSION \
 			&& make install_sw ; \
 		}
 
+COPY		0001-Add-support-for-ciphersuites-option-for-TLSv1.3.patch /usr/src
 RUN             {	cd haproxy-$HAPROXY_VERSION \ 
+			&& patch -p1 < /usr/src/0001-Add-support-for-ciphersuites-option-for-TLSv1.3.patch \
                         && make all TARGET=linux2628 \  
                                 USE_LUA=1 LUA_INC=/usr/include/lua5.3 LUA_LIB=/usr/lib/lua5.3 \
                                 USE_OPENSSL=1 SSL_INC=/usr/local/include SSL_LIB=/usr/local/lib \
@@ -51,6 +54,10 @@ RUN             {	cd haproxy-$HAPROXY_VERSION \
                 }
 
 RUN		{	pip install "certbot==$CERTBOT_VERSION" ; \
+			cp hatop/bin/hatop /usr/local/bin ; \
+		}
+
+RUN		{	apk del build-dependencies ; \
 			rm -rf  /usr/local/share \
 				/usr/local/lib/perl5 \
 				/usr/local/include/openssl ; \
@@ -77,6 +84,7 @@ COPY			assets		/usr/local
 
 RUN		{	apk --no-cache --update add \
 				libffi \
+				python \
 				lua5.3 \
 				pcre \
 				expat \
