@@ -43,7 +43,7 @@ RUN		{	cd openssl-$OPENSSL_VERSION \
 			&& make install_sw ; \
 		}
 
-COPY		0001-Add-support-for-ciphersuites-option-for-TLS-1.3.patch /usr/src
+COPY		0001-Add-support-for-ciphersuites-option-for-TLSv1.3.patch /usr/src
 RUN             {	cd haproxy-$HAPROXY_VERSION \ 
 			&& patch -p1 < /usr/src/0001-Add-support-for-ciphersuites-option-for-TLSv1.3.patch \
                         && make all TARGET=linux2628 \  
