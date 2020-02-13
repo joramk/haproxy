@@ -1,8 +1,8 @@
 ARG		HAPROXY_BRANCH=
 ARG             HAPROXY_MAJOR=2.0
 ARG             HAPROXY_VERSION=2.0.13
-ARG             OPENSSL_VERSION=1.1.1
-ARG		ALPINE_VERSION=3.8
+ARG             OPENSSL_VERSION=1.1.1d
+ARG		ALPINE_VERSION=3.11
 ARG		CERTBOT_VERSION=0.27.1
 
 FROM		python:alpine$ALPINE_VERSION AS build
@@ -44,7 +44,7 @@ RUN		{	cd openssl-$OPENSSL_VERSION \
 		}
 
 RUN             {	cd haproxy-$HAPROXY_VERSION \ 
-                        && make all TARGET=linux2628 \  
+                        && make all TARGET=linux-glibc \  
                                 USE_LUA=1 LUA_INC=/usr/include/lua5.3 LUA_LIB=/usr/lib/lua5.3 \
                                 USE_OPENSSL=1 SSL_INC=/usr/local/include SSL_LIB=/usr/local/lib \
                                 USE_PCRE=1 PCREDIR= USE_ZLIB=1 \
