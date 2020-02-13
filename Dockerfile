@@ -1,6 +1,6 @@
 ARG		HAPROXY_BRANCH=
-ARG             HAPROXY_MAJOR=1.8
-ARG             HAPROXY_VERSION=1.8.14
+ARG             HAPROXY_MAJOR=2.0
+ARG             HAPROXY_VERSION=2.0.13
 ARG             OPENSSL_VERSION=1.1.1
 ARG		ALPINE_VERSION=3.8
 ARG		CERTBOT_VERSION=0.27.1
@@ -43,9 +43,7 @@ RUN		{	cd openssl-$OPENSSL_VERSION \
 			&& make install_sw ; \
 		}
 
-COPY		0001-Add-support-for-ciphersuites-option-for-TLSv1.3.patch /usr/src
 RUN             {	cd haproxy-$HAPROXY_VERSION \ 
-			&& patch -p1 < /usr/src/0001-Add-support-for-ciphersuites-option-for-TLSv1.3.patch \
                         && make all TARGET=linux2628 \  
                                 USE_LUA=1 LUA_INC=/usr/include/lua5.3 LUA_LIB=/usr/lib/lua5.3 \
                                 USE_OPENSSL=1 SSL_INC=/usr/local/include SSL_LIB=/usr/local/lib \
