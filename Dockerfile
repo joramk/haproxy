@@ -1,7 +1,6 @@
 ARG		HAPROXY_BRANCH=
 ARG             HAPROXY_MAJOR=2.1
 ARG             HAPROXY_VERSION=2.1.3
-ARG             OPENSSL_VERSION=1.1.1d
 ARG		ALPINE_VERSION=3.11
 ARG		CERTBOT_VERSION=1.2.0
 
@@ -31,18 +30,10 @@ RUN		{	apk --no-cache --update --virtual build-dependencies add \
 
 WORKDIR		/usr/src
 
-RUN		{	wget https://www.openssl.org/source/openssl-$OPENSSL_VERSION.tar.gz ; \
-			tar xvzf openssl-$OPENSSL_VERSION.tar.gz ; \
-			wget https://www.haproxy.org/download/$HAPROXY_MAJOR/src/$HAPROXY_BRANCH/haproxy-$HAPROXY_VERSION.tar.gz ; \
+RUN		{	wget https://www.haproxy.org/download/$HAPROXY_MAJOR/src/$HAPROXY_BRANCH/haproxy-$HAPROXY_VERSION.tar.gz ; \
 			tar xvzf haproxy-$HAPROXY_VERSION.tar.gz ; \
 			git clone https://github.com/feurix/hatop.git ; \
 		}
-
-#RUN		{	cd openssl-$OPENSSL_VERSION \
-#			&& ./config no-async enable-tls1_3 \
-#			&& make all \
-#			&& make install_sw ; \
-#		}
 
 RUN             {	cd haproxy-$HAPROXY_VERSION \ 
                         && make all TARGET=linux-glibc \  
@@ -58,8 +49,7 @@ RUN		{	pip install "certbot==$CERTBOT_VERSION" ; \
 
 RUN		{	apk del build-dependencies ; \
 			rm -rf  /usr/local/share \
-				/usr/local/lib/perl5 \
-				/usr/local/include/openssl ; \
+				/usr/local/lib/perl5 ; \
 		}
 
 
