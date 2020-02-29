@@ -1,7 +1,6 @@
 ARG		HAPROXY_BRANCH=devel
 ARG             HAPROXY_MAJOR=2.2
 ARG             HAPROXY_VERSION=2.2-dev3
-ARG             OPENSSL_VERSION=1.1.1d
 ARG		ALPINE_VERSION=3.11
 ARG		CERTBOT_VERSION=1.2.0
 
@@ -9,11 +8,11 @@ FROM		python:alpine$ALPINE_VERSION AS build
 ARG		HAPROXY_BRANCH
 ARG		HAPROXY_MAJOR
 ARG		HAPROXY_VERSION
-ARG		OPENSSL_VERSION
 ARG		CERTBOT_VERSION
 
 RUN		{	apk --no-cache --update --virtual build-dependencies add \
 				libffi-dev \
+				openssl-dev \
 				libxml2-dev \
 				libxslt-dev \
 				python-dev \
@@ -30,23 +29,15 @@ RUN		{	apk --no-cache --update --virtual build-dependencies add \
 
 WORKDIR		/usr/src
 
-RUN		{	wget https://www.openssl.org/source/openssl-$OPENSSL_VERSION.tar.gz ; \
-			tar xvzf openssl-$OPENSSL_VERSION.tar.gz ; \
-			wget https://www.haproxy.org/download/$HAPROXY_MAJOR/src/$HAPROXY_BRANCH/haproxy-$HAPROXY_VERSION.tar.gz ; \
+RUN		{	wget https://www.haproxy.org/download/$HAPROXY_MAJOR/src/$HAPROXY_BRANCH/haproxy-$HAPROXY_VERSION.tar.gz ; \
 			tar xvzf haproxy-$HAPROXY_VERSION.tar.gz ; \
 			git clone https://github.com/feurix/hatop.git ; \
-		}
-
-RUN		{	cd openssl-$OPENSSL_VERSION \
-			&& ./config no-async enable-tls1_3 \
-			&& make all \
-			&& make install_sw ; \
 		}
 
 RUN             {	cd haproxy-$HAPROXY_VERSION \ 
                         && make all TARGET=linux-glibc \  
                                 USE_LUA=1 LUA_INC=/usr/include/lua5.3 LUA_LIB=/usr/lib/lua5.3 \
-                                USE_OPENSSL=1 SSL_INC=/usr/local/include SSL_LIB=/usr/local/lib \
+                                USE_OPENSSL=1 SSL_INC=/usr/include SSL_LIB=/usr/lib \
                                 USE_PCRE=1 PCREDIR= USE_ZLIB=1 \
                         && make install ; \    
                 }
@@ -57,8 +48,7 @@ RUN		{	pip install "certbot==$CERTBOT_VERSION" ; \
 
 RUN		{	apk del build-dependencies ; \
 			rm -rf  /usr/local/share \
-				/usr/local/lib/perl5 \
-				/usr/local/include/openssl ; \
+				/usr/local/lib/perl5 ; \
 		}
 
 
@@ -81,6 +71,7 @@ COPY --from=build	/usr/local 	/usr/local
 COPY			assets		/usr/local
 
 RUN		{	apk --no-cache --update add \
+				openssl \ 
 				libffi \
 				python \
 				lua5.3 \
