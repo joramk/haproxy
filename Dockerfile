@@ -8,7 +8,6 @@ FROM		python:alpine$ALPINE_VERSION AS build
 ARG		HAPROXY_BRANCH
 ARG		HAPROXY_MAJOR
 ARG		HAPROXY_VERSION
-ARG		OPENSSL_VERSION
 ARG		CERTBOT_VERSION
 
 RUN		{	apk --no-cache --update --virtual build-dependencies add \
