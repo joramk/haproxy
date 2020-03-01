@@ -2,6 +2,11 @@ sudo: required
 
 notifications:
   webhooks: https://outlook.office.com/webhook/cfae3260-dd71-4be7-a7cf-e78bbd28b7b1@bfbe857c-5e55-4b44-afac-dc82981893de/TravisCI/05567ff3e5554368919ec4085a09c2cf/6af55f55-b31d-4878-b0fa-1ef2c8483d6d
+  email:
+    recipients:
+      - joramk+travis-ci_haproxy@gmail.com
+    on_success: never
+    on_failure: always
 
 services:
   - docker
