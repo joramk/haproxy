@@ -12,9 +12,8 @@ services:
   - docker
 
 before_install:
-- docker build -t joramk/haproxy:1.9-dev .
-- docker run --tmpfs /run --tmpfs /tmp -v /sys/fs/cgroup:/sys/fs/cgroup:ro --name haproxy -d joramk/haproxy:1.9-dev
+- docker build -t joramk/haproxy:latest .
+- docker run --tmpfs /run --tmpfs /tmp -v /sys/fs/cgroup:/sys/fs/cgroup:ro --name haproxy -d joramk/haproxy:latest
 
 script:
 - while sleep 5; do docker top haproxy ; docker logs haproxy ; docker ps -a | grep ago ; if [ `docker ps -a | grep '(unhealthy)' | wc -l` != "0" ]; then exit 1; fi ; if [ `docker ps -a | grep '(healthy)' | wc -l` != "0" ]; then exit 0; fi ; if [ `docker ps -a | grep 'starting)' | wc -l` == "0" ]; then exit 1; fi ; done
-
