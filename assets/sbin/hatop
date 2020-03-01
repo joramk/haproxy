@@ -1,2 +1,2 @@
 #!/bin/bash
-python2 /usr/local/bin/hatop -s /var/run/haproxy.admin
+python2 /usr/local/bin/hatop -s /var/run/haproxy.admin $@
