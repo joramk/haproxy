@@ -1,6 +1,6 @@
 ARG		HAPROXY_BRANCH=
-ARG             HAPROXY_MAJOR=1.8
-ARG             HAPROXY_VERSION=1.8.24
+ARG             HAPROXY_MAJOR=2.2
+ARG             HAPROXY_VERSION=2.2-dev4
 ARG		ALPINE_VERSION=3.11
 ARG		CERTBOT_VERSION=1.2.0
 
@@ -35,7 +35,7 @@ RUN		{	wget https://www.haproxy.org/download/$HAPROXY_MAJOR/src/$HAPROXY_BRANCH/
 		}
 
 RUN             {	cd haproxy-$HAPROXY_VERSION \ 
-                        && make all TARGET=linux-glibc \  
+                        && make all TARGET=linux-libc \  
                                 USE_LUA=1 LUA_INC=/usr/include/lua5.3 LUA_LIB=/usr/lib/lua5.3 \
                                 USE_OPENSSL=1 SSL_INC=/usr/include SSL_LIB=/usr/lib \
                                 USE_PCRE=1 PCREDIR= USE_ZLIB=1 \
