@@ -1,7 +1,7 @@
 ARG		HAPROXY_BRANCH=
 <<<<<<< HEAD
-ARG             HAPROXY_MAJOR=2.1
-ARG             HAPROXY_VERSION=2.1.4
+ARG             HAPROXY_MAJOR=2.2
+ARG             HAPROXY_VERSION=2.2.1
 =======
 ARG             HAPROXY_MAJOR=2.2
 ARG             HAPROXY_VERSION=2.2.1
