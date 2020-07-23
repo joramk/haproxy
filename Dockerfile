@@ -1,6 +1,11 @@
 ARG		HAPROXY_BRANCH=
+<<<<<<< HEAD
 ARG             HAPROXY_MAJOR=2.1
 ARG             HAPROXY_VERSION=2.1.4
+=======
+ARG             HAPROXY_MAJOR=2.2
+ARG             HAPROXY_VERSION=2.2.1
+>>>>>>> df0c93785c7ba345abc47fff90ecb7fecf6c398e
 ARG		ALPINE_VERSION=3.11
 ARG		CERTBOT_VERSION=1.3.0
 
