@@ -1,8 +1,8 @@
 ARG		HAPROXY_BRANCH=devel
 ARG             HAPROXY_MAJOR=2.3
-ARG             HAPROXY_VERSION=2.3-dev4
-ARG		ALPINE_VERSION=3.11
-ARG		CERTBOT_VERSION=1.3.0
+ARG             HAPROXY_VERSION=2.3-dev5
+ARG		ALPINE_VERSION=3.12
+ARG		CERTBOT_VERSION=1.6.0
 
 FROM		python:alpine$ALPINE_VERSION AS build
 ARG		HAPROXY_BRANCH
@@ -15,7 +15,7 @@ RUN		{	apk --no-cache --update --virtual build-dependencies add \
 				openssl-dev \
 				libxml2-dev \
 				libxslt-dev \
-				python-dev \
+				python2-dev \
 				build-base \
 				git \
 				lua5.3-dev \
@@ -73,7 +73,7 @@ COPY			assets		/usr/local
 RUN		{	apk --no-cache --update add \
 				openssl \ 
 				libffi \
-				python \
+				python2 \
 				lua5.3 \
 				pcre \
 				expat \
