@@ -7,7 +7,6 @@ FROM	python:alpine$ALPINE_VERSION AS build
 ARG		HAPROXY_BRANCH
 ARG		HAPROXY_MAJOR
 ARG		HAPROXY_VERSION
-ARG		CERTBOT_VERSION
 
 RUN		{	apk --no-cache --update --virtual build-dependencies add \
 				libc-dev \
@@ -67,7 +66,7 @@ LABEL 		org.label-schema.build-date=$BUILD_DATE \
 ENV 		container docker
 
 COPY --from=build	/usr/local 	/usr/local
-COPY				assets		/usr/local
+COPY			assets		/usr/local
 
 RUN		{	apk --no-cache --update add \
 				openssl \ 
