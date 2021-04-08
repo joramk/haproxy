@@ -11,6 +11,7 @@ ARG		HAPROXY_VERSION
 ARG		CERTBOT_VERSION
 
 RUN		{	apk --no-cache --update --virtual build-dependencies add \
+				libc-dev \
 				libffi-dev \
 				openssl-dev \
 				libxml2-dev \
@@ -42,8 +43,7 @@ RUN             {	cd haproxy-$HAPROXY_VERSION \
                         && make install ; \    
                 }
 
-RUN		{	pip install "certbot==$CERTBOT_VERSION" ; \
-			cp hatop/bin/hatop /usr/local/bin ; \
+RUN		{	cp hatop/bin/hatop /usr/local/bin ; \
 		}
 
 RUN		{	apk del build-dependencies ; \
@@ -80,6 +80,7 @@ RUN		{	apk --no-cache --update add \
 				incron \
 				bash \
 				zlib \
+				certbot \
 				socat \
 				coreutils ; \
 			apk update && apk upgrade ; \
