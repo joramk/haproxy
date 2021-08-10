@@ -21,5 +21,8 @@ build:
     - docker build --no-cache --pull -t "$CI_REGISTRY_IMAGE:$CI_COMMIT_TAG" .
     - docker push "$CI_REGISTRY_IMAGE:$CI_COMMIT_TAG"
     - case "$CI_COMMIT_TAG" in *\-*) CI_SHORT_TAG=`echo "$CI_COMMIT_TAG" | sed -e 's/\([0-9.]*\).*/\1/'`; docker tag "$CI_REGISTRY_IMAGE:$CI_COMMIT_TAG" "$CI_REGISTRY_IMAGE:$CI_SHORT_TAG"; docker push "$CI_REGISTRY_IMAGE:$CI_SHORT_TAG";; esac
+    - docker rename "$CI_REGISTRY_IMAGE:$CI_COMMIT_TAG" "$HUB_REGISTRY/haproxy:$CI_COMMIT_TAG"
+    - docker push "$HUB_REGISTRY/haproxy:$CI_COMMIT_TAG"
+    - case "$CI_COMMIT_TAG" in *\-*) CI_SHORT_TAG=`echo "$CI_COMMIT_TAG" | sed -e 's/\([0-9.]*\).*/\1/'`; docker tag "$HUB_REGISTRY/haproxy:$CI_COMMIT_TAG" "$HUB_REGISTRY/haproxy:$CI_SHORT_TAG"; docker push "$HUB_REGISTRY/haproxy:$CI_SHORT_TAG";; esac
   except:
     - master
