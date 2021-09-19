@@ -7,7 +7,7 @@ if [ -f /.env-haproxy-letsencrypt ] && [ -f /.env-haproxy-letsencrypt-ocsp ]; th
 	  -issuer ${OCSP_DOMAIN}/chain.pem \
 	  -verify_other ${OCSP_DOMAIN}/chain.pem \
 	  -cert ${OCSP_DOMAIN}/cert.pem \
-	  -url $OCSP_URL 2>/dev/null
+	  -url ${OCSP_URL} 2>/dev/null
 	 if [ "$1" != "--fetch-only" ]; then
 	  echo "set ssl ocsp-response $(base64 -w0 /etc/haproxy/letsencrypt/`basename ${OCSP_DOMAIN}`.pem.ocsp)" | /usr/bin/socat stdio /var/run/haproxy.admin
 	 fi
