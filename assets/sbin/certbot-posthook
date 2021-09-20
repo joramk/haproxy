@@ -5,8 +5,8 @@
 # with private key attached.
 #
 
-for dir in $(ls -d /etc/letsencrypt/live/*); do
-        cat $dir/privkey.pem $dir/fullchain.pem > /etc/haproxy/letsencrypt/`basename $dir`.pem
+for dir in $(ls -d /etc/letsencrypt/live/*/); do
+        cat ${dir}privkey.pem ${dir}fullchain.pem > /etc/haproxy/letsencrypt/`basename $dir`.pem
 done
 
 if [ "$1" != "--no-reload" ]; then

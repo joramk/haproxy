@@ -5,6 +5,7 @@ services:
 
 before_script:
   - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
+  - docker login -u "$HUB_USERNAME" -p "$HUB_PASSWORD" $HUB_REGISTRY
 
 build-master:
   stage: build
@@ -21,5 +22,9 @@ build:
     - docker build --no-cache --pull -t "$CI_REGISTRY_IMAGE:$CI_COMMIT_TAG" .
     - docker push "$CI_REGISTRY_IMAGE:$CI_COMMIT_TAG"
     - case "$CI_COMMIT_TAG" in *\-*) CI_SHORT_TAG=`echo "$CI_COMMIT_TAG" | sed -e 's/\([0-9.]*\).*/\1/'`; docker tag "$CI_REGISTRY_IMAGE:$CI_COMMIT_TAG" "$CI_REGISTRY_IMAGE:$CI_SHORT_TAG"; docker push "$CI_REGISTRY_IMAGE:$CI_SHORT_TAG";; esac
+    - docker tag "$CI_REGISTRY_IMAGE:$CI_COMMIT_TAG" "joramk/haproxy:$CI_COMMIT_TAG"
+    - docker push "joramk/haproxy:$CI_COMMIT_TAG"
+    - case "$CI_COMMIT_TAG" in *\-*) CI_SHORT_TAG=`echo "$CI_COMMIT_TAG" | sed -e 's/\([0-9.]*\).*/\1/'`; docker tag "$CI_REGISTRY_IMAGE:$CI_COMMIT_TAG" "joramk/haproxy:$CI_SHORT_TAG"; docker push "joramk/haproxy:$CI_SHORT_TAG";; esac
+    - if [[ "$CI_COMMIT_TAG" == *"dev"* ]]; then docker tag "$CI_REGISTRY_IMAGE:$CI_COMMIT_TAG" "joramk/haproxy:devel"; docker push "joramk/haproxy:devel"; fi
   except:
     - master
