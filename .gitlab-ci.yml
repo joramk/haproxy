@@ -33,8 +33,8 @@ build:
         docker tag "$CI_REGISTRY_IMAGE:$CI_COMMIT_TAG" "joramk/haproxy:CI_SHORT_TAG";
         docker push "joramk/haproxy:CI_SHORT_TAG";
         docker tag "$CI_REGISTRY_IMAGE:$CI_COMMIT_TAG" "joramk/haproxy:CI_SHORT_TAG-lts";
-        docker push "joramk/haproxy:CI_SHORT_TAG-lts";
-      ; esac
+        docker push "joramk/haproxy:CI_SHORT_TAG-lts";;
+      esac
     - docker tag "$CI_REGISTRY_IMAGE:$CI_COMMIT_TAG" "joramk/haproxy:$CI_COMMIT_TAG"
     - docker push "joramk/haproxy:$CI_COMMIT_TAG"
     - docker tag "$CI_REGISTRY_IMAGE:$CI_COMMIT_TAG" "joramk/haproxy:latest"
@@ -44,11 +44,11 @@ build:
     - case "$CI_COMMIT_TAG" in *\-*)
         CI_SHORT_TAG=`echo "$CI_COMMIT_TAG" | sed -e 's/\([0-9.]*\).*/\1/'`;
         docker tag "$CI_REGISTRY_IMAGE:$CI_COMMIT_TAG" "$CI_REGISTRY_IMAGE:$CI_SHORT_TAG";
-        docker push "$CI_REGISTRY_IMAGE:$CI_SHORT_TAG";
-      ; esac
+        docker push "$CI_REGISTRY_IMAGE:$CI_SHORT_TAG";;
+      esac
     - case "$CI_COMMIT_TAG" in *\-*) CI_SHORT_TAG=`echo "$CI_COMMIT_TAG" | sed -e 's/\([0-9.]*\).*/\1/'`;
         docker tag "$CI_REGISTRY_IMAGE:$CI_COMMIT_TAG" "joramk/haproxy:$CI_SHORT_TAG";
-        docker push "joramk/haproxy:$CI_SHORT_TAG";
-      ; esac
+        docker push "joramk/haproxy:$CI_SHORT_TAG";;
+      esac
   except:
     - master
