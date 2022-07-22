@@ -74,7 +74,7 @@ COPY				assets		/usr/local
 RUN		{	apk --no-cache --update add \
 				openssl \ 
 				libffi \
-				python2 \
+				python3 \
 				lua5.3 \
 				pcre \
 				expat \
