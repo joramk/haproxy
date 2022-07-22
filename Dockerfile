@@ -17,7 +17,7 @@ RUN		{	apk --no-cache --update --virtual build-dependencies add \
 				openssl-dev \
 				libxml2-dev \
 				libxslt-dev \
-				python2-dev \
+				python3-dev \
 				build-base \
 				git \
 				lua5.3-dev \
