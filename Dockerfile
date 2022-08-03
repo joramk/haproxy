@@ -16,7 +16,7 @@ RUN		{	apk --no-cache --update --virtual build-dependencies add \
 				openssl-dev \
 				libxml2-dev \
 				libxslt-dev \
-				python2-dev \
+				python3-dev \
 				build-base \
 				git \
 				lua5.3-dev \
@@ -73,7 +73,7 @@ COPY				assets		/usr/local
 RUN		{	apk --no-cache --update add \
 				openssl \ 
 				libffi \
-				python2 \
+				python3 \
 				lua5.3 \
 				pcre \
 				expat \
