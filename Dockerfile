@@ -1,7 +1,7 @@
 ARG		HAPROXY_BRANCH=
 ARG		HAPROXY_MAJOR=2.5
 ARG		HAPROXY_VERSION=2.5.11
-ARG		ALPINE_VERSION=3
+ARG		ALPINE_VERSION=3.17
 ARG		PYTHON_VERSION=3
 
 FROM	python:$PYTHON_VERSION-alpine AS build
@@ -71,7 +71,7 @@ COPY --from=build	/usr/local 	/usr/local
 COPY				assets		/usr/local
 
 RUN		{	apk --no-cache --update add \
-				openssl \ 
+				openssl1.1-compat \ 
 				libffi \
 				python3 \
 				lua5.3 \
