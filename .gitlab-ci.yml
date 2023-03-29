@@ -24,10 +24,10 @@ build:
       fi
     - docker build --no-cache --pull -t "$CI_REGISTRY_IMAGE:$CI_COMMIT_TAG" .
     - docker push "$CI_REGISTRY_IMAGE:$CI_COMMIT_TAG"
-    - docker tag "$CI_REGISTRY_IMAGE:$CI_COMMIT_TAG" "$CI_REGISTRY_IMAGE:latest";
-    - docker push "$CI_REGISTRY_IMAGE:latest"
-    - docker tag "$CI_REGISTRY_IMAGE:$CI_COMMIT_TAG" "joramk/haproxy:latest";
-    - docker push "joramk/haproxy:latest"
+    - docker tag "$CI_REGISTRY_IMAGE:$CI_COMMIT_TAG" "$CI_REGISTRY_IMAGE:longterm";
+    - docker push "$CI_REGISTRY_IMAGE:longterm"
+    - docker tag "$CI_REGISTRY_IMAGE:$CI_COMMIT_TAG" "joramk/haproxy:longterm";
+    - docker push "joramk/haproxy:longterm"
     - if [ "${CI_COMMIT_REF_NAME:0:1}" == "v" ]; then
         docker tag "$CI_REGISTRY_IMAGE:$CI_COMMIT_TAG" "joramk/haproxy:$CI_COMMIT_TAG";
         docker push "joramk/haproxy:${CI_COMMIT_REF_NAME:1}";
