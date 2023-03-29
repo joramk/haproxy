@@ -71,6 +71,7 @@ COPY --from=build	/usr/local 	/usr/local
 COPY				assets		/usr/local
 
 RUN		{	apk --no-cache --update add \
+				openssl \
 				openssl1.1-compat \ 
 				libffi \
 				python3 \
