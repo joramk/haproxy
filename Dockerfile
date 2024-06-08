@@ -1,7 +1,7 @@
 ARG		HAPROXY_BRANCH=
 ARG             HAPROXY_MAJOR=2.8
 ARG             HAPROXY_VERSION=2.8.9
-ARG		ALPINE_VERSION=3.17
+ARG		ALPINE_VERSION=3.20
 ARG		PYTHON_VERSION=3-alpine
 
 FROM	python:$PYTHON_VERSION AS build
@@ -70,9 +70,10 @@ ENV 		container docker
 COPY --from=build	/usr/local 	/usr/local
 COPY				assets		/usr/local
 
-RUN		{	apk --no-cache --update add \
+RUN		{	apk --no-cache --update add bash \
+				libssl3 \
+                                libcrypto3 \
 				openssl \
-				openssl1.1-compat \ 
 				libffi \
 				python3 \
 				lua5.3 \
