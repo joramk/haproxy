@@ -16,7 +16,7 @@ build-master:
   tags:
     - arm
   script:
-    - docker buildx build --shm-size=512m --platform linux/amd64,linux/arm64,linux/arm/v7,linux/arm/v6 --no-cache --pull -t "$CI_REGISTRY_IMAGE:latest" --push .
+    - docker buildx build --shm-size=512m --platform linux/amd64,linux/arm64,linux/arm/v7,linux/arm/v6 --no-cache --pull -t "$CI_REGISTRY_IMAGE:experimental" --push .
   only:
     - master
 
@@ -28,8 +28,30 @@ build:
     - CI_COMMIT_TAG=$CI_COMMIT_REF_NAME
     - if [ "${CI_COMMIT_REF_NAME:0:1}" == "v" ]; then
         CI_COMMIT_TAG=${CI_COMMIT_REF_NAME:1};
+        if [[ "$CI_COMMIT_TAG" =~ ^v(([0-9]+\.[0-9]+)\.[0-9]+)(.*)$ ]]; then
+          if [ "${BASH_REMATCH[3]}" == "" ]; then
+            docker buildx build --shm-size=512m --platform linux/amd64,linux/arm64,linux/arm/v7,linux/arm/v6 --no-cache --pull \
+              -t "$CI_REGISTRY_IMAGE:${BASH_REMATCH[1]}" \
+              -t "joramk/haproxy:${BASH_REMATCH[1]}" \
+              -t "$CI_REGISTRY_IMAGE:${BASH_REMATCH[2]}" \
+              -t "joramk/haproxy:${BASH_REMATCH[2]}" \
+              --push .
+          else
+            docker buildx build --shm-size=512m --platform linux/amd64,linux/arm64,linux/arm/v7,linux/arm/v6 --no-cache --pull \
+              -t "$CI_REGISTRY_IMAGE:${BASH_REMATCH[1]}" \
+              -t "joramk/haproxy:${BASH_REMATCH[1]}" \
+              -t "$CI_REGISTRY_IMAGE:${BASH_REMATCH[2]}" \
+              -t "joramk/haproxy:${BASH_REMATCH[2]}" \
+              -t "$CI_REGISTRY_IMAGE:${BASH_REMATCH[3]:1}" \
+              -t "joramk/haproxy:${BASH_REMATCH[3]:1}" \
+              -t "$CI_REGISTRY_IMAGE:${BASH_REMATCH[2]}${BASH_REMATCH[3]}" \
+              -t "joramk/haproxy:${BASH_REMATCH[2]}${BASH_REMATCH[3]}" \
+              --push .
+          fi
+        fi
+      else
+        docker buildx build --shm-size=512m --platform linux/amd64,linux/arm64,linux/arm/v7,linux/arm/v6 --no-cache --pull -t "$CI_REGISTRY_IMAGE:$CI_COMMIT_TAG" .
       fi
-    - docker buildx build --shm-size=512m --platform linux/amd64,linux/arm64,linux/arm/v7,linux/arm/v6 --no-cache --pull -t "$CI_REGISTRY_IMAGE:$CI_COMMIT_TAG" -t "joramk/haproxy:$CI_COMMIT_TAG" --push .
   except:
     - master
 
