@@ -11,6 +11,7 @@ ARG		HAPROXY_VERSION
 ARG		CERTBOT_VERSION
 
 RUN		{	apk --no-cache --update --virtual build-dependencies add \
+				libexecinfo-dev \
 				libc-dev \
 				libffi-dev \
 				openssl-dev \
