@@ -1,16 +1,18 @@
 ARG		HAPROXY_BRANCH=
 ARG             HAPROXY_MAJOR=3.0
 ARG             HAPROXY_VERSION=3.0.0
-ARG		ALPINE_VERSION=3.17
+ARG		ALPINE_VERSION=3.20
 ARG		PYTHON_VERSION=3-alpine
 
-FROM	python:$PYTHON_VERSION AS build
+FROM	alpine:$ALPINE_VERSION AS build
 ARG		HAPROXY_BRANCH
 ARG		HAPROXY_MAJOR
 ARG		HAPROXY_VERSION
 ARG		CERTBOT_VERSION
 
-RUN		{	apk --no-cache --update --virtual build-dependencies add \
+RUN		{	apk --no-cache --upgrade --virtual build-dependencies add \
+				libssl3 \
+                                libcrypto3 \
 				libc-dev \
 				libffi-dev \
 				openssl-dev \
@@ -52,7 +54,7 @@ RUN		{	apk del build-dependencies ; \
 		}
 
 
-FROM 		alpine:$ALPINE_VERSION
+FROM 		python:$PYTHON_VERSION
 ARG		HAPROXY_VERSION
 ARG 		BUILD_DATE
 ARG 		VCS_REF
@@ -67,12 +69,13 @@ LABEL 		org.label-schema.build-date=$BUILD_DATE \
 			org.label-schema.docker.cmd="docker run -d -p 80:80 -p 443:443 -v haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg joramk/haproxy"
 ENV 		container docker
 
-COPY --from=build	/usr/local 	/usr/local
-COPY				assets		/usr/local
+COPY --from=build       /usr/local      /usr/local
+COPY                    assets          /usr/local
 
-RUN		{	apk --no-cache --update add \
+RUN		{	apk --no-cache --upgrade add bash \
+				libssl3 \
+				libcrypto3 \
 				openssl \
-				openssl1.1-compat \ 
 				libffi \
 				python3 \
 				lua5.3 \
@@ -84,12 +87,11 @@ RUN		{	apk --no-cache --update add \
 				certbot \
 				socat \
 				coreutils ; \
-			apk update && apk upgrade ; \
 			mkdir -p /usr/local/etc/haproxy/letsencrypt /usr/local/etc/letsencrypt ; \
 			ln -s /usr/local/etc/haproxy /etc/haproxy ; \
 			ln -s /usr/local/etc/letsencrypt /etc/letsencrypt ; \
-			chmod +x /usr/local/sbin/* ; \
 			rm -rf /var/cache/apk/* ; \
+			chmod +x /usr/local/sbin/* ; \
 		}
 
 EXPOSE			80 443
