@@ -33,7 +33,7 @@ build:
             if [ "${BASH_REMATCH[3]}" == "" ]; then
               docker buildx build --shm-size=512m --platform linux/amd64,linux/arm64,linux/arm/v7,linux/arm/v6 --no-cache --pull -t "$CI_REGISTRY_IMAGE:${BASH_REMATCH[1]}" -t "joramk/haproxy:${BASH_REMATCH[1]}" -t "$CI_REGISTRY_IMAGE:${BASH_REMATCH[2]}" -t "joramk/haproxy:${BASH_REMATCH[2]}" --push .
             else
-              docker buildx build --shm-size=512m --platform linux/amd64,linux/arm64,linux/arm/v7,linux/arm/v6 --no-cache --pull -t "$CI_REGISTRY_IMAGE:${BASH_REMATCH[1]}" -t "joramk/haproxy:${BASH_REMATCH[1]}" -t "$CI_REGISTRY_IMAGE:${BASH_REMATCH[2]}" -t "joramk/haproxy:${BASH_REMATCH[2]}" -t "$CI_REGISTRY_IMAGE:${BASH_REMATCH[3]:1}" -t "joramk/haproxy:${BASH_REMATCH[3]:1}" -t "$CI_REGISTRY_IMAGE:${BASH_REMATCH[2]}${BASH_REMATCH[3]}" -t "joramk/haproxy:${BASH_REMATCH[2]}${BASH_REMATCH[3]}" --push .
+              docker buildx build --shm-size=512m --platform linux/amd64,linux/arm64,linux/arm/v7,linux/arm/v6 --no-cache --pull -t "$CI_REGISTRY_IMAGE:${BASH_REMATCH[1]}" -t "joramk/haproxy:${BASH_REMATCH[1]}" -t "$CI_REGISTRY_IMAGE:${BASH_REMATCH[2]}" -t "joramk/haproxy:${BASH_REMATCH[2]}" -t "$CI_REGISTRY_IMAGE:${BASH_REMATCH[2]}${BASH_REMATCH[3]}" -t "joramk/haproxy:${BASH_REMATCH[2]}${BASH_REMATCH[3]}" --push .
             fi
           fi
         else
