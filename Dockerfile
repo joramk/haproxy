@@ -11,7 +11,6 @@ ARG		HAPROXY_VERSION
 ARG		CERTBOT_VERSION
 
 RUN		{	apk --no-cache --update --virtual build-dependencies add \
-				elfutils-dev \
 				libc-dev \
 				libffi-dev \
 				openssl-dev \
@@ -37,7 +36,7 @@ RUN		{	wget -q https://www.haproxy.org/download/$HAPROXY_MAJOR/src/$HAPROXY_BRAN
 		}
 
 RUN		{	cd haproxy-$HAPROXY_VERSION \ 
-				&& nice -n15 make all -j$(nproc) TARGET=linux-glibc \  
+				&& nice -n15 make all -j$(nproc) TARGET=linux-libc \  
 					USE_LUA=1 LUA_INC=/usr/include/lua5.3 LUA_LIB=/usr/lib/lua5.3 \
 					USE_OPENSSL=1 SSL_INC=/usr/include SSL_LIB=/usr/lib \
 					USE_PCRE=1 PCREDIR= USE_ZLIB=1 \
