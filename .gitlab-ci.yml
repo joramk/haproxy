@@ -3,16 +3,11 @@ image: docker:latest
 services:
   - docker:dind
 
-variables:
-  DOCKER_HOST: tcp://127.0.0.1:2375
-  DOCKER_TLS_CERTDIR: ""
-  DOCKER_DRIVER: overlay2
-
 before_script:
   - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
   - docker login -u "$HUB_USERNAME" -p "$HUB_PASSWORD" $HUB_REGISTRY
-  - docker buildx create --name haproxy_builder
-  - docker buildx use haproxy_builder
+  - docker buildx create --name haproxy_builder1
+  - docker buildx use haproxy_builder1
 
 build-master:
   stage: build
@@ -59,5 +54,5 @@ build:
     - master
 
 after_script:
-  - docker buildx stop haproxy_builder
-  - docker buildx rm haproxy_builder
+  - docker buildx stop haproxy_builder1
+  - docker buildx rm haproxy_builder1
