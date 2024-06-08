@@ -41,7 +41,7 @@ RUN		{	cd haproxy-$HAPROXY_VERSION \
 				&& make all -j$(nproc) TARGET=linux-libc \  
 					USE_LUA=1 LUA_INC=/usr/include/lua5.3 LUA_LIB=/usr/lib/lua5.3 \
 					USE_OPENSSL=1 SSL_INC=/usr/include SSL_LIB=/usr/lib \
-					USE_PCRE=1 PCREDIR= USE_ZLIB=1 \
+					USE_PCRE=1 PCREDIR= USE_QUIC=1 USE_PROMEX=1 USE_QUIC_OPENSSL_COMPAT=1 \
 				&& make install ; \    
 		}
 
