@@ -35,5 +35,8 @@
 ### Manually renew certificates
     docker exec -ti <container_name> certbot-renew --force-renewal
 
+## Supported architectures
+`amd64`, `arm32v6`, `arm32v7`, `arm64`
+
 ## Repository and bug reports
 Please see https://github.com/joramk/haproxy/issues for filing issues.
