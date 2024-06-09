@@ -10,10 +10,7 @@ ARG		HAPROXY_VERSION
 
 RUN		{	apk --no-cache --upgrade --virtual build-dependencies add \
 				automake autoconf make cmake gcc g++ binutils libtool pkgconf gawk \
-				libssl3 \
-                                libcrypto3 \
 				libffi-dev \
-				openssl-dev \
 				libxml2-dev \
 				libxslt-dev \
 				build-base \
@@ -27,7 +24,7 @@ RUN		{	apk --no-cache --upgrade --virtual build-dependencies add \
 				tar ; \
 		}
 
-WORKDIR	/usr/src
+WORKDIR		/usr/src
 
 RUN		{	wget -q https://www.haproxy.org/download/$HAPROXY_MAJOR/src/$HAPROXY_BRANCH/haproxy-$HAPROXY_VERSION.tar.gz ; \
 			tar xzf haproxy-$HAPROXY_VERSION.tar.gz ; \
@@ -88,13 +85,12 @@ LABEL		org.label-schema.build-date=$BUILD_DATE \
 		org.label-schema.docker.cmd="docker run -d -p 80:80 -p 443:443 -v haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg joramk/haproxy"
 ENV		container docker
 
-COPY --from=build       /usr/local      /usr/local
-COPY                    assets          /usr/local
+COPY		--from=build	/usr/local	/usr/local
+COPY				assets		/usr/local
 
-RUN		{	apk --no-cache --upgrade add bash ca-certificates \
-				libssl3 \
-				libcrypto3 \
-				openssl \
+RUN		{	apk --no-cache --upgrade add \
+				bash \
+				ca-certificates \
 				libffi \
 				python3 \
 				lua5.4 \
@@ -113,11 +109,10 @@ RUN		{	apk --no-cache --upgrade add bash ca-certificates \
 			chmod +x /usr/local/sbin/* ; \
 		}
 
-RUN			haproxy -vv
-EXPOSE			80 443
-HEALTHCHECK CMD		kill -0 1 || exit 1
-STOPSIGNAL		SIGUSR1
-WORKDIR			/usr/local/lib/haproxy
-VOLUME			[ "/etc/haproxy", "/etc/letsencrypt" ]
-ENTRYPOINT		[ "docker-entrypoint.sh" ]
-CMD			[ "haproxy", "-V", "-W", "-f", "/usr/local/etc/haproxy/haproxy.cfg" ]
+RUN		haproxy -vv
+EXPOSE		80 443
+HEALTHCHECK CMD	kill -0 1 || exit 1
+STOPSIGNAL	SIGUSR1
+VOLUME		[ "/etc/haproxy", "/etc/letsencrypt" ]
+ENTRYPOINT	[ "docker-entrypoint.sh" ]
+CMD		[ "haproxy", "-V", "-W", "-f", "/usr/local/etc/haproxy/haproxy.cfg" ]
