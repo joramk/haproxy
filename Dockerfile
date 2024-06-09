@@ -49,7 +49,7 @@ RUN		{	apk --no-cache --upgrade --virtual build-dependencies add \
 
 WORKDIR		/usr/src
 
-RUN             {	if [[ "$TARGETPLATFORM" != arm* ]]; then
+RUN             {	if [[ "$ARCHITECTURE" != arm* ]]; then
 				wget -q https://github.com/quictls/openssl/archive/refs/tags/openssl-3.1.5-quic1.tar.gz ; \
 				tar xzf openssl-3.1.5-quic1.tar.gz ; \
 				cd openssl-openssl-3.1.5-quic1 ; \
@@ -79,7 +79,7 @@ RUN		{	wget -q https://github.com/haproxytech/opentracing-c-wrapper/archive/refs
 RUN		{	wget -q https://www.haproxy.org/download/$HAPROXY_MAJOR/src/$HAPROXY_BRANCH/haproxy-$HAPROXY_VERSION.tar.gz ; \
                         tar xzf haproxy-$HAPROXY_VERSION.tar.gz ; \
 			cd haproxy-$HAPROXY_VERSION ; \
-			if [[ "$TARGETPLATFORM" != arm* ]]; then \
+			if [[ "$ARCHITECTURE" != arm* ]]; then \
 				PLATFORM_SPECIFIC="SSL_INC=/usr/local/include SSL_LIB=/usr/local/lib LDFLAGS=\"-Wl,-rpath,/usr/local/lib\"" ; \
 			else \
 				PLATFORM_SPECIFIC="USE_QUIC_OPENSSL_COMPAT=1" ; \
