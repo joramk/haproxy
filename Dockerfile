@@ -7,7 +7,6 @@ FROM		alpine:$ALPINE_VERSION AS build
 ARG		HAPROXY_BRANCH
 ARG		HAPROXY_MAJOR
 ARG		HAPROXY_VERSION
-ARG		CERTBOT_VERSION
 
 RUN		{	apk --no-cache --upgrade --virtual build-dependencies add \
 				libssl3 \
@@ -32,14 +31,14 @@ WORKDIR	/usr/src
 
 RUN		{	wget -q https://www.haproxy.org/download/$HAPROXY_MAJOR/src/$HAPROXY_BRANCH/haproxy-$HAPROXY_VERSION.tar.gz ; \
 			tar xzf haproxy-$HAPROXY_VERSION.tar.gz ; \
-			wget -q https://github.com/quictls/openssl/archive/refs/tags/OpenSSL_1_1_1w-quic1.tar.gz ; \
-			tar xzf OpenSSL_1_1_1w-quic1.tar.gz ; \
+			wget -q https://github.com/quictls/openssl/archive/refs/tags/openssl-3.1.5-quic1.tar.gz ; \
+			tar xzf openssl-3.1.5-quic1.tar.gz ; \
 		}
 
-RUN		{	cd openssl-OpenSSL_1_1_1w-quic1 ; \
+RUN		{	cd openssl-openssl-3.1.5-quic1 ; \
 			mkdir -p /usr/local/quictls ; \
 			./config --libdir=lib --prefix=/usr/local/quictls ; \
-			make && make install_sw ; \
+			make -j$(nproc) && make install_sw ; \
 		}
 
 RUN		{	cd haproxy-$HAPROXY_VERSION \ 
@@ -67,7 +66,7 @@ LABEL		org.label-schema.build-date=$BUILD_DATE \
 		org.label-schema.vcs-ref=$VCS_REF \
 		org.label-schema.schema-version="1.0.0-rc1" \
 		org.label-schema.name="HAProxy $HAPROXY_VERSION" \
-		org.label-schema.description="HAProxy $HAPROXY_VERSION with TLSv1.3" \
+		org.label-schema.description="HAProxy $HAPROXY_VERSION with quicTLS support" \
 		org.label-schema.vendor="Joram Knaack" \
 		org.label-schema.docker.cmd="docker run -d -p 80:80 -p 443:443 -v haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg joramk/haproxy"
 ENV		container docker
