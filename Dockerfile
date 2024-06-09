@@ -7,6 +7,20 @@ FROM		alpine:$ALPINE_VERSION AS build
 ARG		HAPROXY_BRANCH
 ARG		HAPROXY_MAJOR
 ARG		HAPROXY_VERSION
+ARG		TARGETPLATFORM
+
+RUN		{	if [ "$TARGETPLATFORM" = "linux/amd64" ]; then \
+				ARCHITECTURE="amd64"; \
+			elif [ "$TARGETPLATFORM" = "linux/arm/v7" ]; then \
+				ARCHITECTURE="armv7"; \
+                        elif [ "$TARGETPLATFORM" = "linux/arm/v6" ]; then \
+                                ARCHITECTURE="armv6"; \
+			elif [ "$TARGETPLATFORM" = "linux/arm64" ]; then \
+				ARCHITECTURE="aarch64"; \
+			else \
+				ARCHITECTURE="unknown"; \
+			fi ; \
+		}
 
 RUN		{	apk --no-cache --upgrade --virtual build-dependencies add \
 				automake \
@@ -33,43 +47,48 @@ RUN		{	apk --no-cache --upgrade --virtual build-dependencies add \
 				tar ; \
 		}
 
-WORKDIR	/usr/src
+WORKDIR		/usr/src
 
-RUN		{	wget -q https://www.haproxy.org/download/$HAPROXY_MAJOR/src/$HAPROXY_BRANCH/haproxy-$HAPROXY_VERSION.tar.gz ; \
-			tar xzf haproxy-$HAPROXY_VERSION.tar.gz ; \
-			wget -q https://github.com/quictls/openssl/archive/refs/tags/openssl-3.1.5-quic1.tar.gz ; \
-			tar xzf openssl-3.1.5-quic1.tar.gz ; \
-			wget -q https://github.com/opentracing/opentracing-cpp/archive/refs/tags/v1.6.0.tar.gz ; \
-			tar xzf v1.6.0.tar.gz ; \
-			wget -q https://github.com/haproxytech/opentracing-c-wrapper/archive/refs/tags/v1.1.3.tar.gz ; \
-			tar xzf v1.1.3.tar.gz ; \
-		}
-
-RUN             {       cd openssl-openssl-3.1.5-quic1 ; \
-                        mkdir -p /usr/local ; \
-                        ./config no-tests --libdir=lib --prefix=/usr/local ; \
-                        make -j$(nproc) && make install_sw ; \
+RUN             {	if [[ "$TARGETPLATFORM" != arm* ]]; then
+				wget -q https://github.com/quictls/openssl/archive/refs/tags/openssl-3.1.5-quic1.tar.gz ; \
+				tar xzf openssl-3.1.5-quic1.tar.gz ; \
+				cd openssl-openssl-3.1.5-quic1 ; \
+				mkdir -p /usr/local ; \
+				./config no-tests --libdir=lib --prefix=/usr/local ; \
+				make -j$(nproc) && make install_sw ; \
+			fi ; \
                 }
 
-RUN		{	cd opentracing-cpp-1.6.0 ; \
+RUN		{	wget -q https://github.com/opentracing/opentracing-cpp/archive/refs/tags/v1.6.0.tar.gz ; \
+                        tar xzf v1.6.0.tar.gz ; \
+			cd opentracing-cpp-1.6.0 ; \
 			mkdir build && cd build ; \
 			cmake -DCMAKE_INSTALL_PREFIX=/usr/local .. ; \
 			make -j$(nproc) && make install ; \
 			ln -s /usr/local/include/opentracing-c-wrapper-1-1-3 /usr/local/include/opentracing-c-wrapper ; \
 		}
 
-RUN		{	cd opentracing-c-wrapper-1.1.3 ; \
+RUN		{	wget -q https://github.com/haproxytech/opentracing-c-wrapper/archive/refs/tags/v1.1.3.tar.gz ; \
+                        tar xzf v1.1.3.tar.gz ; \
+			cd opentracing-c-wrapper-1.1.3 ; \
 			./scripts/bootstrap ; \
 			./configure --prefix=/usr/local --with-opentracing=/usr/local ; \
 			make -j$(nproc) && make install ; \
 		}
 
-RUN		{	cd haproxy-$HAPROXY_VERSION ; \ 
+RUN		{	wget -q https://www.haproxy.org/download/$HAPROXY_MAJOR/src/$HAPROXY_BRANCH/haproxy-$HAPROXY_VERSION.tar.gz ; \
+                        tar xzf haproxy-$HAPROXY_VERSION.tar.gz ; \
+			cd haproxy-$HAPROXY_VERSION ; \
+			if [[ "$TARGETPLATFORM" != arm* ]]; then \
+				PLATFORM_SPECIFIC="SSL_INC=/usr/local/include SSL_LIB=/usr/local/lib LDFLAGS=\"-Wl,-rpath,/usr/local/lib\"" ; \
+			else \
+				PLATFORM_SPECIFIC="USE_QUIC_OPENSSL_COMPAT=1" ; \
+			fi ; \
 			PKG_CONFIG_PATH=/usr/local/lib/pkgconfig make all -j$(nproc) TARGET=linux-musl USE_THREAD=1 USE_LIBCRYPT=1 \  
 				USE_LUA=1 LUA_INC=/usr/include/lua5.4 LUA_LIB=/usr/lib/lua5.4 \
 				USE_OPENSSL=1 SUBVERS="-$(uname -m)" USE_OT=1 OT_USE_VARS=1 OT_LIB=/usr/local/lib OT_INC=/usr/local/include OT_RUNPATH=1 \
 				USE_PCRE2=1 USE_PCRE2_JIT=1 PCREDIR= USE_TFO=1 USE_PROMEX=1 USE_QUIC=1 IGNOREGIT=1 \
-				SSL_INC=/usr/local/include SSL_LIB=/usr/local/lib LDFLAGS="-Wl,-rpath,/usr/local/lib" \
+				$PLATFORM_SPECIFIC \
 			&& make install ; \    
 		}
 
