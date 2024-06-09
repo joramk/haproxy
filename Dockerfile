@@ -18,7 +18,7 @@ RUN		{	apk --no-cache --upgrade --virtual build-dependencies add \
 				libxslt-dev \
 				build-base \
 				git \
-				lua5.3-dev \
+				lua5.4-dev \
 				zlib-dev \
 				linux-headers \
 				pcre2-dev \
@@ -42,8 +42,8 @@ RUN		{	cd openssl-openssl-3.1.5-quic1 ; \
 		}
 
 RUN		{	cd haproxy-$HAPROXY_VERSION \ 
-				&& make all -j$(nproc) TARGET=linux-libc USE_THREAD=1 USE_LIBCRYPT=1 \  
-					USE_LUA=1 LUA_INC=/usr/include/lua5.3 LUA_LIB=/usr/lib/lua5.3 \
+				&& make all -j$(nproc) TARGET=linux-musl USE_THREAD=1 USE_LIBCRYPT=1 \  
+					USE_LUA=1 LUA_INC=/usr/include/lua5.4 LUA_LIB=/usr/lib/lua5.4 \
 					USE_OPENSSL=1 SSL_INC=/usr/include SSL_LIB=/usr/lib SUBVERS="-$(uname -m)" \
 					USE_PCRE2=1 USE_PCRE2_JIT=1 PCREDIR= USE_TFO=1 USE_PROMEX=1 USE_QUIC=1 IGNOREGIT=1 \
 					SSL_INC=/usr/local/quictls/include SSL_LIB=/usr/local/quictls/lib LDFLAGS="-Wl,-rpath,/usr/local/quictls/lib" \
@@ -74,13 +74,13 @@ ENV		container docker
 COPY --from=build       /usr/local      /usr/local
 COPY                    assets          /usr/local
 
-RUN		{	apk --no-cache --upgrade add bash \
+RUN		{	apk --no-cache --upgrade add bash ca-certificates \
 				libssl3 \
 				libcrypto3 \
 				openssl \
 				libffi \
 				python3 \
-				lua5.3 \
+				lua5.4 \
 				pcre2 \
 				expat \
 				incron \
@@ -96,9 +96,11 @@ RUN		{	apk --no-cache --upgrade add bash \
 			chmod +x /usr/local/sbin/* ; \
 		}
 
+RUN			haproxy -vv
 EXPOSE			80 443
-HEALTHCHECK CMD	kill -0 1 || exit 1
+HEALTHCHECK CMD		kill -0 1 || exit 1
 STOPSIGNAL		SIGUSR1
+WORKDIR			/usr/local/lib/haproxy
 VOLUME			[ "/etc/haproxy", "/etc/letsencrypt" ]
 ENTRYPOINT		[ "docker-entrypoint.sh" ]
 CMD			[ "haproxy", "-V", "-W", "-f", "/usr/local/etc/haproxy/haproxy.cfg" ]
