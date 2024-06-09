@@ -12,7 +12,6 @@ RUN		{	apk --no-cache --upgrade --virtual build-dependencies add \
 				automake autoconf make cmake gcc g++ binutils libtool pkgconf gawk \
 				libssl3 \
                                 libcrypto3 \
-				libc-dev \
 				libffi-dev \
 				openssl-dev \
 				libxml2-dev \
