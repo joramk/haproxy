@@ -5,21 +5,38 @@ services:
 
 before_script:
   - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
+  - docker login -u "$HUB_USERNAME" -p "$HUB_PASSWORD" $HUB_REGISTRY
+  - docker buildx create --name haproxy_builder
+  - docker buildx use haproxy_builder
 
 build-master:
   stage: build
+  tags:
+    - arm
   script:
-    - docker build --no-cache --pull -t "$CI_REGISTRY_IMAGE:latest" .
-    - docker push "$CI_REGISTRY_IMAGE:latest"
+    - docker buildx build --shm-size=512m --platform linux/amd64,linux/arm64 --no-cache --pull -t "$CI_REGISTRY_IMAGE:experimental" --push .
   only:
     - master
 
 build:
   stage: build
+  tags:
+    - arm
   script:
-    - if [ "${CI_COMMIT_REF_NAME:0:1}" == "v" ]; then CI_COMMIT_TAG=${CI_COMMIT_REF_NAME:1}; else CI_COMMIT_TAG=$CI_COMMIT_REF_NAME; fi
-    - docker build --no-cache --pull -t "$CI_REGISTRY_IMAGE:$CI_COMMIT_TAG" .
-    - docker push "$CI_REGISTRY_IMAGE:$CI_COMMIT_TAG"
-    - case "$CI_COMMIT_TAG" in *\-*) CI_SHORT_TAG=`echo "$CI_COMMIT_TAG" | sed -e 's/\([0-9.]*\).*/\1/'`; docker tag "$CI_REGISTRY_IMAGE:$CI_COMMIT_TAG" "$CI_REGISTRY_IMAGE:$CI_SHORT_TAG"; docker push "$CI_REGISTRY_IMAGE:$CI_SHORT_TAG";; esac
+    - |-
+        CI_COMMIT_TAG=$CI_COMMIT_REF_NAME
+        if [ "${CI_COMMIT_REF_NAME:0:1}" == "v" ]; then
+          CI_COMMIT_TAG=${CI_COMMIT_REF_NAME:1};
+          if [[ "$CI_COMMIT_REF_NAME" =~ ^v([0-9]+\.[0-9]+)(.*)$ ]]; then
+            docker buildx build --shm-size=512m --platform linux/amd64,linux/arm64 --no-cache --pull -t "$CI_REGISTRY_IMAGE:${BASH_REMATCH[1]}" -t "joramk/haproxy:${BASH_REMATCH[1]}" -t "$CI_REGISTRY_IMAGE:${BASH_REMATCH[1]}${BASH_REMATCH[2]}" -t "joramk/haproxy:${BASH_REMATCH[1]}${BASH_REMATCH[2]}" -t "$CI_REGISTRY_IMAGE:devel" -t "joramk/haproxy:devel" -t "$CI_REGISTRY_IMAGE:dev" -t "joramk/haproxy:dev" --push .
+          fi
+        else
+          docker buildx build --shm-size=512m --platform linux/amd64,linux/arm64 --no-cache --pull -t "$CI_REGISTRY_IMAGE:$CI_COMMIT_TAG" .
+        fi
   except:
     - master
+
+after_script:
+  - docker buildx stop haproxy_builder
+  - docker buildx rm haproxy_builder
+
