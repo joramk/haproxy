@@ -10,6 +10,7 @@ ARG		HAPROXY_VERSION
 ARG		TARGETPLATFORM
 
 RUN		{	apk --no-cache --upgrade --virtual build-dependencies add \
+				openssl-dev \
 				automake \
 				autoconf \
 				make \
