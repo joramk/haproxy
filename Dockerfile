@@ -20,12 +20,6 @@ RUN		{	if [ "$TARGETPLATFORM" = "linux/amd64" ]; then \
 			else \
 				ARCHITECTURE="unknown"; \
 			fi ; \
-			echo $TARGETPLATFORM ; \
-			echo $ARCHITECTURE ; \
-			if [[ "$ARCHITECTURE" != arm* ]]; then \
-				echo "not ARM" ; \
-			fi; \
-			exit 1 ; \
 		}
 
 RUN		{	apk --no-cache --upgrade --virtual build-dependencies add \
@@ -55,7 +49,13 @@ RUN		{	apk --no-cache --upgrade --virtual build-dependencies add \
 
 WORKDIR		/usr/src
 
-RUN             {	if [[ "$ARCHITECTURE" != arm* ]]; then \
+RUN             {	echo $TARGETPLATFORM ; \
+                        echo $ARCHITECTURE ; \
+                        if [[ "$ARCHITECTURE" != arm* ]]; then \
+                                echo "not ARM" ; \
+                        fi; \
+                        exit 1 ; \
+			if [[ "$ARCHITECTURE" != arm* ]]; then \
 				wget -q https://github.com/quictls/openssl/archive/refs/tags/openssl-3.1.5-quic1.tar.gz ; \
 				tar xzf openssl-3.1.5-quic1.tar.gz ; \
 				cd openssl-openssl-3.1.5-quic1 ; \
