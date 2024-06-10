@@ -10,7 +10,7 @@ ARG		HAPROXY_VERSION
 ARG		TARGETPLATFORM
 ARG		VCS_REF
 
-RUN		{	if [[ "$TARGETPLATFORM" == *arm* ]]; then \
+RUN		{	if [[ "$TARGETPLATFORM" == *arm\/v* ]]; then \
 				PLATFORM_SPECIFIC="openssl-dev" ; \
 			fi ; \
 			apk --no-cache --upgrade --virtual build-dependencies add \
@@ -40,7 +40,7 @@ RUN		{	if [[ "$TARGETPLATFORM" == *arm* ]]; then \
 
 WORKDIR		/usr/src
 
-RUN             {	if [[ "$TARGETPLATFORM" != *arm* ]]; then \
+RUN             {	if [[ "$TARGETPLATFORM" != *arm\/v* ]]; then \
 				wget -q https://github.com/quictls/openssl/archive/refs/tags/openssl-3.1.5-quic1.tar.gz ; \
 				tar xzf openssl-3.1.5-quic1.tar.gz ; \
 				cd openssl-openssl-3.1.5-quic1 ; \
@@ -70,10 +70,10 @@ RUN		{	wget -q https://github.com/haproxytech/opentracing-c-wrapper/archive/refs
 RUN		{	wget -q https://www.haproxy.org/download/$HAPROXY_MAJOR/src/$HAPROXY_BRANCH/haproxy-$HAPROXY_VERSION.tar.gz ; \
                         tar xzf haproxy-$HAPROXY_VERSION.tar.gz ; \
 			cd haproxy-$HAPROXY_VERSION ; \
-			if [[ "$TARGETPLATFORM" != *arm* ]]; then \
-				PLATFORM_SPECIFIC="SSL_INC=/usr/local/include SSL_LIB=/usr/local/lib LDFLAGS=\"-Wl,-rpath,/usr/local/lib\"" ; \
-			else \
+			if [[ "$TARGETPLATFORM" == *arm\/v* ]]; then \
 				PLATFORM_SPECIFIC="USE_QUIC_OPENSSL_COMPAT=1" ; \
+			else \
+				PLATFORM_SPECIFIC="SSL_INC=/usr/local/include SSL_LIB=/usr/local/lib LDFLAGS=\"-Wl,-rpath,/usr/local/lib\"" ; \
 			fi ; \
 			PKG_CONFIG_PATH=/usr/local/lib/pkgconfig make all -j$(nproc) TARGET=linux-musl USE_THREAD=1 USE_LIBCRYPT=1 \  
 				USE_LUA=1 LUA_INC=/usr/include/lua5.4 LUA_LIB=/usr/lib/lua5.4 EXTRAVERSION="-$VCS_REF" \
