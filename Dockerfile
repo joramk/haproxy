@@ -109,7 +109,7 @@ ENV		container docker
 COPY		--from=build	/usr/local	/usr/local
 COPY				assets		/usr/local
 
-RUN		{	if [[ "$TARGETPLATFORM" == *arm* ]]; then \
+RUN		{	if [[ "$TARGETPLATFORM" == *arm\/v* ]]; then \
                                 PLATFORM_SPECIFIC="openssl" ; \
                         fi ; \
 			apk --no-cache --upgrade add \
