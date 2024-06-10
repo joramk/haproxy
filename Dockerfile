@@ -8,6 +8,7 @@ ARG		HAPROXY_BRANCH
 ARG		HAPROXY_MAJOR
 ARG		HAPROXY_VERSION
 ARG		TARGETPLATFORM
+ARG		VCS_REF
 
 RUN		{	if [[ "$TARGETPLATFORM" == *arm* ]]; then \
 				PLATFORM_SPECIFIC="openssl-dev" ; \
@@ -75,7 +76,7 @@ RUN		{	wget -q https://www.haproxy.org/download/$HAPROXY_MAJOR/src/$HAPROXY_BRAN
 				PLATFORM_SPECIFIC="USE_QUIC_OPENSSL_COMPAT=1" ; \
 			fi ; \
 			PKG_CONFIG_PATH=/usr/local/lib/pkgconfig make all -j$(nproc) TARGET=linux-musl USE_THREAD=1 USE_LIBCRYPT=1 \  
-				USE_LUA=1 LUA_INC=/usr/include/lua5.4 LUA_LIB=/usr/lib/lua5.4 EXTRAVERSION="$VCS_REF" \
+				USE_LUA=1 LUA_INC=/usr/include/lua5.4 LUA_LIB=/usr/lib/lua5.4 EXTRAVERSION="-$VCS_REF" \
 				USE_OPENSSL=1 SUBVERS="/$TARGETPLATFORM" USE_OT=1 OT_USE_VARS=1 OT_LIB=/usr/local/lib OT_INC=/usr/local/include OT_RUNPATH=1 \
 				USE_PCRE2=1 USE_PCRE2_JIT=1 PCREDIR= USE_TFO=1 USE_PROMEX=1 USE_QUIC=1 IGNOREGIT=1 \
 				$PLATFORM_SPECIFIC \
@@ -99,7 +100,7 @@ LABEL		org.label-schema.build-date=$BUILD_DATE \
 		org.label-schema.vcs-ref=$VCS_REF \
 		org.label-schema.schema-version="1.0.0-rc1" \
 		org.label-schema.name="HAProxy $HAPROXY_VERSION" \
-		org.label-schema.description="HAProxy $HAPROXY_VERSION $TARGETPLATFORM" \
+		org.label-schema.description="HAProxy $HAPROXY_VERSION/$TARGETPLATFORM-$VCS_REF" \
 		org.label-schema.vendor="Joram Knaack" \
 		org.label-schema.build-date=$BUILD_DATE \
 		org.label-schema.docker.cmd="docker run -d -p 80:80 -p 443:443 -v haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg joramk/haproxy"
