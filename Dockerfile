@@ -9,19 +9,6 @@ ARG		HAPROXY_MAJOR
 ARG		HAPROXY_VERSION
 ARG		TARGETPLATFORM
 
-RUN		{	if [ "$TARGETPLATFORM" = "linux/amd64" ]; then \
-				ARCHITECTURE="amd64"; \
-			elif [ "$TARGETPLATFORM" = "linux/arm/v7" ]; then \
-				ARCHITECTURE="armv7"; \
-                        elif [ "$TARGETPLATFORM" = "linux/arm/v6" ]; then \
-                                ARCHITECTURE="armv6"; \
-			elif [ "$TARGETPLATFORM" = "linux/arm64" ]; then \
-				ARCHITECTURE="aarch64"; \
-			else \
-				ARCHITECTURE="unknown"; \
-			fi ; \
-		}
-
 RUN		{	apk --no-cache --upgrade --virtual build-dependencies add \
 				automake \
 				autoconf \
@@ -49,13 +36,7 @@ RUN		{	apk --no-cache --upgrade --virtual build-dependencies add \
 
 WORKDIR		/usr/src
 
-RUN             {	echo $TARGETPLATFORM ; \
-                        echo $ARCHITECTURE ; \
-                        if [[ "$ARCHITECTURE" != arm* ]]; then \
-                                echo "not ARM" ; \
-                        fi; \
-                        exit 1 ; \
-			if [[ "$ARCHITECTURE" != arm* ]]; then \
+RUN             {	if [[ "$TARGETPLATFORM" != *arm* ]]; then \
 				wget -q https://github.com/quictls/openssl/archive/refs/tags/openssl-3.1.5-quic1.tar.gz ; \
 				tar xzf openssl-3.1.5-quic1.tar.gz ; \
 				cd openssl-openssl-3.1.5-quic1 ; \
@@ -85,7 +66,7 @@ RUN		{	wget -q https://github.com/haproxytech/opentracing-c-wrapper/archive/refs
 RUN		{	wget -q https://www.haproxy.org/download/$HAPROXY_MAJOR/src/$HAPROXY_BRANCH/haproxy-$HAPROXY_VERSION.tar.gz ; \
                         tar xzf haproxy-$HAPROXY_VERSION.tar.gz ; \
 			cd haproxy-$HAPROXY_VERSION ; \
-			if [[ "$ARCHITECTURE" != arm* ]]; then \
+			if [[ "$TARGETPLATFORM" != *arm* ]]; then \
 				PLATFORM_SPECIFIC="SSL_INC=/usr/local/include SSL_LIB=/usr/local/lib LDFLAGS=\"-Wl,-rpath,/usr/local/lib\"" ; \
 			else \
 				PLATFORM_SPECIFIC="USE_QUIC_OPENSSL_COMPAT=1" ; \
