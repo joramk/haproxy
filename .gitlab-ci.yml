@@ -14,7 +14,7 @@ build-master:
   tags:
     - arm
   script:
-    - docker buildx build --shm-size=512m --platform linux/arm/v6,linux/arm/v7 --no-cache --pull -t "$CI_REGISTRY_IMAGE:experimental" --push .
+    - docker buildx build --shm-size=512m --platform linux/amd64,linux/arm64,linux/arm/v6,linux/arm/v7 --no-cache --pull -t "$CI_REGISTRY_IMAGE:experimental" --push .
   only:
     - master
 
