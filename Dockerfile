@@ -9,8 +9,10 @@ ARG		HAPROXY_MAJOR
 ARG		HAPROXY_VERSION
 ARG		TARGETPLATFORM
 
-RUN		{	apk --no-cache --upgrade --virtual build-dependencies add \
-				openssl-dev \
+RUN		{	if [[ "$TARGETPLATFORM" == *arm* ]]; then \
+				PLATFORM_SPECIFIC="openssl-dev" ; \
+			fi ; \
+			apk --no-cache --upgrade --virtual build-dependencies add \
 				automake \
 				autoconf \
 				make \
@@ -32,7 +34,7 @@ RUN		{	apk --no-cache --upgrade --virtual build-dependencies add \
 				pcre2-dev \
 				wget \
 				perl \
-				tar ; \
+				tar $PLATFORM_SPECIFIC ; \
 		}
 
 WORKDIR		/usr/src
@@ -73,8 +75,8 @@ RUN		{	wget -q https://www.haproxy.org/download/$HAPROXY_MAJOR/src/$HAPROXY_BRAN
 				PLATFORM_SPECIFIC="USE_QUIC_OPENSSL_COMPAT=1" ; \
 			fi ; \
 			PKG_CONFIG_PATH=/usr/local/lib/pkgconfig make all -j$(nproc) TARGET=linux-musl USE_THREAD=1 USE_LIBCRYPT=1 \  
-				USE_LUA=1 LUA_INC=/usr/include/lua5.4 LUA_LIB=/usr/lib/lua5.4 \
-				USE_OPENSSL=1 SUBVERS=" $TARGETPLATFORM" USE_OT=1 OT_USE_VARS=1 OT_LIB=/usr/local/lib OT_INC=/usr/local/include OT_RUNPATH=1 \
+				USE_LUA=1 LUA_INC=/usr/include/lua5.4 LUA_LIB=/usr/lib/lua5.4 EXTRAVERSION="$VCS_REF" \
+				USE_OPENSSL=1 SUBVERS="/$TARGETPLATFORM" USE_OT=1 OT_USE_VARS=1 OT_LIB=/usr/local/lib OT_INC=/usr/local/include OT_RUNPATH=1 \
 				USE_PCRE2=1 USE_PCRE2_JIT=1 PCREDIR= USE_TFO=1 USE_PROMEX=1 USE_QUIC=1 IGNOREGIT=1 \
 				$PLATFORM_SPECIFIC \
 			&& make install ; \    
@@ -90,21 +92,26 @@ FROM		alpine:$ALPINE_VERSION
 ARG		HAPROXY_VERSION
 ARG		BUILD_DATE
 ARG		VCS_REF
+ARG		BUILD_DATE
 MAINTAINER	Joram Knaack <joramk@gmail.com>
 LABEL		org.label-schema.build-date=$BUILD_DATE \
 		org.label-schema.vcs-url="https://github.com/joramk/haproxy.git" \
 		org.label-schema.vcs-ref=$VCS_REF \
 		org.label-schema.schema-version="1.0.0-rc1" \
 		org.label-schema.name="HAProxy $HAPROXY_VERSION" \
-		org.label-schema.description="HAProxy $HAPROXY_VERSION with quicTLS support" \
+		org.label-schema.description="HAProxy $HAPROXY_VERSION $TARGETPLATFORM" \
 		org.label-schema.vendor="Joram Knaack" \
+		org.label-schema.build-date=$BUILD_DATE \
 		org.label-schema.docker.cmd="docker run -d -p 80:80 -p 443:443 -v haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg joramk/haproxy"
 ENV		container docker
 
 COPY		--from=build	/usr/local	/usr/local
 COPY				assets		/usr/local
 
-RUN		{	apk --no-cache --upgrade add \
+RUN		{	if [[ "$TARGETPLATFORM" == *arm* ]]; then \
+                                PLATFORM_SPECIFIC="openssl" ; \
+                        fi ; \
+			apk --no-cache --upgrade add \
 				bash \
 				ca-certificates \
 				libffi \
@@ -117,7 +124,7 @@ RUN		{	apk --no-cache --upgrade add \
 				zlib \
 				certbot \
 				socat \
-				coreutils ; \
+				coreutils $PLATFORM_SPECIFIC ; \
 			mkdir -p /usr/local/etc/haproxy/letsencrypt /usr/local/etc/letsencrypt ; \
 			ln -s /usr/local/etc/haproxy /etc/haproxy ; \
 			ln -s /usr/local/etc/letsencrypt /etc/letsencrypt ; \
@@ -129,7 +136,6 @@ RUN		haproxy -vv
 EXPOSE		80 443
 HEALTHCHECK CMD	kill -0 1 || exit 1
 STOPSIGNAL	SIGUSR1
-WORKDIR		/usr/local/lib/haproxy
 VOLUME		[ "/etc/haproxy", "/etc/letsencrypt" ]
 ENTRYPOINT	[ "docker-entrypoint.sh" ]
 CMD		[ "haproxy", "-V", "-W", "-f", "/usr/local/etc/haproxy/haproxy.cfg" ]
