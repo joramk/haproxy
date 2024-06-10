@@ -20,6 +20,12 @@ RUN		{	if [ "$TARGETPLATFORM" = "linux/amd64" ]; then \
 			else \
 				ARCHITECTURE="unknown"; \
 			fi ; \
+			echo $TARGETPLATFORM ; \
+			echo $ARCHITECTURE ; \
+			if [[ "$ARCHITECTURE" != arm* ]]; then \
+				echo "not ARM" ; \
+			fi; \
+			exit 1 ; \
 		}
 
 RUN		{	apk --no-cache --upgrade --virtual build-dependencies add \
