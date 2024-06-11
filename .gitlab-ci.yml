@@ -65,17 +65,7 @@ build:
                 . ;
         else
           docker buildx build
-                --shm-size=512m
-                --platform linux/amd64,linux/arm64,linux/arm/v6,linux/arm/v7
-                --no-cache
-                --pull
-                --tag "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME"
-                --build-arg "VCS_REF=$(git rev-parse --short HEAD)"
-                --build-arg "BUILD_DATE=$(date -u +"%Y-%m-%dT%H:%M:%SZ")"
-                --build-arg "HAPROXY_BRANCH=$HAPROXY_BRANCH"
-                --build-arg "HAPROXY_MAJOR=$HAPROXY_MAJOR"
-                --build-arg "HAPROXY_VERSION=$HAPROXY_VERSION"
-                . ;
+                --shm-size=512m --platform linux/amd64,linux/arm64,linux/arm/v6,linux/arm/v7                --no-cache                --pull                --tag "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME"                --build-arg "VCS_REF=$(git rev-parse --short HEAD)"                --build-arg "BUILD_DATE=$(date -u +"%Y-%m-%dT%H:%M:%SZ")"                --build-arg "HAPROXY_BRANCH=$HAPROXY_BRANCH"                --build-arg "HAPROXY_MAJOR=$HAPROXY_MAJOR"                --build-arg "HAPROXY_VERSION=$HAPROXY_VERSION"                . ;
         fi;
   except:
     - master
