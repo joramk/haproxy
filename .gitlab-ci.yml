@@ -21,18 +21,18 @@ build-master:
   script:
     - |-
         docker buildx build
-                --shm-size=512m
-                --platform linux/amd64,linux/arm64,linux/arm/v6,linux/arm/v7
-                --no-cache
-                --pull
-                --tag "$CI_REGISTRY_IMAGE:experimental"
-                --build-arg VCS_REF=$(git rev-parse --short HEAD)
-                --build-arg BUILD_DATE=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
-                --build-arg HAPROXY_BRANCH=$HAPROXY_BRANCH
-                --build-arg HAPROXY_MAJOR=$HAPROXY_MAJOR
-                --build-arg HAPROXY_VERSION=$HAPROXY_VERSION
-                --push
-                .
+         --shm-size=512m
+         --platform linux/amd64,linux/arm64,linux/arm/v6,linux/arm/v7
+         --no-cache
+         --pull
+         --tag "$CI_REGISTRY_IMAGE:experimental"
+         --build-arg VCS_REF=$(git rev-parse --short HEAD)
+         --build-arg BUILD_DATE=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+         --build-arg HAPROXY_BRANCH=$HAPROXY_BRANCH
+         --build-arg HAPROXY_MAJOR=$HAPROXY_MAJOR
+         --build-arg HAPROXY_VERSION=$HAPROXY_VERSION
+         --push
+         .
   only:
     - master
 
@@ -44,25 +44,25 @@ build:
     - |-
         if [[ "$CI_COMMIT_REF_NAME" =~ ^v([0-9]+\.[0-9]+)(.*)$ ]]; then
           docker buildx build
-          --shm-size=512m
-          --platform linux/amd64,linux/arm64,linux/arm/v6,linux/arm/v7
-          --no-cache
-          --pull
-          --tag "$CI_REGISTRY_IMAGE:${BASH_REMATCH[1]}"
-          --tag "joramk/haproxy:${BASH_REMATCH[1]}"
-          --tag "$CI_REGISTRY_IMAGE:${BASH_REMATCH[1]}${BASH_REMATCH[2]}"
-          --tag "joramk/haproxy:${BASH_REMATCH[1]}${BASH_REMATCH[2]}"
-          --tag "$CI_REGISTRY_IMAGE:devel"
-          --tag "joramk/haproxy:devel"
-          --tag "$CI_REGISTRY_IMAGE:dev"
-          --tag "joramk/haproxy:dev"
-          --build-arg "VCS_REF=$(git rev-parse --short HEAD)"
-          --build-arg "BUILD_DATE=$(date -u +"%Y-%m-%dT%H:%M:%SZ")"
-          --build-arg "HAPROXY_BRANCH=$HAPROXY_BRANCH"
-          --build-arg "HAPROXY_MAJOR=$HAPROXY_MAJOR"
-          --build-arg "HAPROXY_VERSION=$HAPROXY_VERSION"
-          --push
-          . ;
+           --shm-size=512m
+           --platform linux/amd64,linux/arm64,linux/arm/v6,linux/arm/v7
+           --no-cache
+           --pull
+           --tag "$CI_REGISTRY_IMAGE:${BASH_REMATCH[1]}"
+           --tag "joramk/haproxy:${BASH_REMATCH[1]}"
+           --tag "$CI_REGISTRY_IMAGE:${BASH_REMATCH[1]}${BASH_REMATCH[2]}"
+           --tag "joramk/haproxy:${BASH_REMATCH[1]}${BASH_REMATCH[2]}"
+           --tag "$CI_REGISTRY_IMAGE:devel"
+           --tag "joramk/haproxy:devel"
+           --tag "$CI_REGISTRY_IMAGE:dev"
+           --tag "joramk/haproxy:dev"
+           --build-arg "VCS_REF=$(git rev-parse --short HEAD)"
+           --build-arg "BUILD_DATE=$(date -u +"%Y-%m-%dT%H:%M:%SZ")"
+           --build-arg "HAPROXY_BRANCH=$HAPROXY_BRANCH"
+           --build-arg "HAPROXY_MAJOR=$HAPROXY_MAJOR"
+           --build-arg "HAPROXY_VERSION=$HAPROXY_VERSION"
+           --push
+           .
         else
           docker buildx build
           --shm-size=512m
@@ -75,8 +75,8 @@ build:
           --build-arg "HAPROXY_BRANCH=$HAPROXY_BRANCH"
           --build-arg "HAPROXY_MAJOR=$HAPROXY_MAJOR"
           --build-arg "HAPROXY_VERSION=$HAPROXY_VERSION"
-          . ;
-        fi;
+          .
+        fi
   except:
     - master
 
