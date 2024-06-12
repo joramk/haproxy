@@ -44,8 +44,8 @@ build:
     - |-
         if [[ "$CI_COMMIT_REF_NAME" == *dev* ]]; then
           DEVEL_TAG="--tag \"$CI_REGISTRY_IMAGE:devel\" --tag \"joramk/haproxy:devel\" --tag \"$CI_REGISTRY_IMAGE:dev\" --tag \"joramk/haproxy:dev\""
-	fi
-	if [[ "$CI_COMMIT_REF_NAME" =~ ^v3\.0\. ]]; then
+        fi
+        if [[ "$CI_COMMIT_REF_NAME" =~ ^v3\.0\. ]]; then
           LATEST_TAG="--tag \"$CI_REGISTRY_IMAGE:latest\" --tag \"joramk/haproxy:latest\" --tag \"$CI_REGISTRY_IMAGE:lts\" --tag \"joramk/haproxy:lts\""
         fi
         if [[ "$CI_COMMIT_REF_NAME" =~ ^v([0-9]+\.[0-9]+)(.*)$ ]]; then
