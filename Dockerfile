@@ -51,8 +51,8 @@ RUN	{	if [[ "$TARGETPLATFORM" != *arm\/v* ]]; then \
 
 RUN	{	git clone "${DATAPLANE_URL}" dataplaneapi && \
 		cd dataplaneapi && \
-		git checkout "v${DATAPLANE_MINOR}" && \
-		make build && cp build/dataplaneapi /usr/local/sbin/dataplaneapi ; \
+		git checkout "v${DATAPLANE_MINOR}" && ls -la && ls -la build && ls -la /usr/local && \
+		make build && cp build/dataplaneapi /usr/local/sbin/ ; \
 	}
 
 RUN	{	wget -q https://github.com/opentracing/opentracing-cpp/archive/refs/tags/v1.6.0.tar.gz ; \
