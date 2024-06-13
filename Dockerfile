@@ -43,7 +43,7 @@ RUN	{	if [[ "$TARGETPLATFORM" != *arm\/v* ]]; then \
 			wget -q https://github.com/quictls/openssl/archive/refs/tags/openssl-3.1.5-quic1.tar.gz ; \
 			tar xzf openssl-3.1.5-quic1.tar.gz ; \
 			cd openssl-openssl-3.1.5-quic1 ; \
-			mkdir -p /usr/local ; \
+			mkdir -p /usr/local/sbin ; \
 			./config no-tests --libdir=lib --prefix=/usr/local ; \
 			make -j$(nproc) && make install_sw ; \
 		fi ; \
