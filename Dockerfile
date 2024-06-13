@@ -51,8 +51,8 @@ RUN	{	if [[ "$TARGETPLATFORM" != *arm\/v* ]]; then \
 
 RUN	{	git clone "${DATAPLANE_URL}" dataplaneapi && \
 		cd dataplaneapi && \
-		git checkout "v${DATAPLANE_MINOR}" && ls -la && \
-		make build && ls -la build && ls -la /usr/local && cp build/dataplaneapi /usr/local/sbin/ ; \
+		git checkout "v${DATAPLANE_MINOR}" && \
+		make build && cp build/dataplaneapi /usr/local/bin/ ; \
 	}
 
 RUN	{	wget -q https://github.com/opentracing/opentracing-cpp/archive/refs/tags/v1.6.0.tar.gz ; \
@@ -89,7 +89,7 @@ RUN	{	wget -q https://www.haproxy.org/download/$HAPROXY_MAJOR/src/$HAPROXY_BRANC
 	}
 
 RUN	{	apk del build-dependencies ; \
-		rm -rf  /usr/local/share \
+		rm -rf  /usr/local/share /usr/local/go \
 			/usr/local/lib/perl5 ; \
 	}
 
