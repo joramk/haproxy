@@ -6,12 +6,13 @@ ARG		HAPROXY_MAJOR
 ARG		HAPROXY_VERSION
 ARG		TARGETPLATFORM
 ARG		VCS_REF
-ENV		DATAPLANE_MINOR 2.9.4
+ENV		DATAPLANE_VERSION 2.9.4
 ENV		DATAPLANE_URL https://github.com/haproxytech/dataplaneapi.git
 	
 RUN	{	if [[ "$TARGETPLATFORM" == *arm\/v* ]]; then \
 			PLATFORM_SPECIFIC="openssl-dev" ; \
 		fi ; \
+		mkdir -p /usr/local/sbin ; \
 		apk --no-cache --upgrade --virtual build-dependencies add \
 			automake \
 			autoconf \
@@ -43,7 +44,6 @@ RUN	{	if [[ "$TARGETPLATFORM" != *arm\/v* ]]; then \
 			wget -q https://github.com/quictls/openssl/archive/refs/tags/openssl-3.1.5-quic1.tar.gz ; \
 			tar xzf openssl-3.1.5-quic1.tar.gz ; \
 			cd openssl-openssl-3.1.5-quic1 ; \
-			mkdir -p /usr/local/sbin ; \
 			./config no-tests --libdir=lib --prefix=/usr/local ; \
 			make -j$(nproc) && make install_sw ; \
 		fi ; \
@@ -51,8 +51,8 @@ RUN	{	if [[ "$TARGETPLATFORM" != *arm\/v* ]]; then \
 
 RUN	{	git clone "${DATAPLANE_URL}" dataplaneapi && \
 		cd dataplaneapi && \
-		git checkout "v${DATAPLANE_MINOR}" && \
-		make build && cp build/dataplaneapi /usr/local/bin/ ; \
+		git checkout "v${DATAPLANE_VERSION}" && \
+		make build && cp build/dataplaneapi /usr/local/sbin/ ; \
 	}
 
 RUN	{	wget -q https://github.com/opentracing/opentracing-cpp/archive/refs/tags/v1.6.0.tar.gz ; \
