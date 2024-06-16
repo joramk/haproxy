@@ -3,7 +3,7 @@ image: docker:latest
 variables:
   HAPROXY_BRANCH: ""
   HAPROXY_MAJOR: "2.8"
-  HAPROXY_VERSION: "2.8.9"
+  HAPROXY_VERSION: "2.8.10"
 
 services:
   - docker:dind
@@ -23,8 +23,8 @@ build-master:
         docker buildx build \
          --shm-size=512m \
          --platform linux/amd64,linux/arm64,linux/arm/v6,linux/arm/v7 \
-         --no-cache \
-         --pull \
+         --no-cache\
+         --pull\
          --tag "$CI_REGISTRY_IMAGE:experimental" \
          --build-arg "VCS_REF=$(git rev-parse --short HEAD)" \
          --build-arg "BUILD_DATE=$(date -u +'%Y-%m-%dT%H:%M:%SZ')" \
@@ -42,12 +42,6 @@ build:
     - arm
   script:
     - |-
-        if [[ "$CI_COMMIT_REF_NAME" == *dev* ]]; then
-          DEVEL_TAG="--tag \"$CI_REGISTRY_IMAGE:devel\" --tag \"joramk/haproxy:devel\" --tag \"$CI_REGISTRY_IMAGE:dev\" --tag \"joramk/haproxy:dev\""
-        fi
-        if [[ "$CI_COMMIT_REF_NAME" =~ ^v3\.0\. ]]; then
-          LATEST_TAG="--tag \"$CI_REGISTRY_IMAGE:latest\" --tag \"joramk/haproxy:latest\" --tag \"$CI_REGISTRY_IMAGE:lts\" --tag \"joramk/haproxy:lts\""
-        fi
         if [[ "$CI_COMMIT_REF_NAME" =~ ^v([0-9]+\.[0-9]+)(.*)$ ]]; then
           docker buildx build \
            --shm-size=512m \
@@ -58,9 +52,12 @@ build:
            --tag "joramk/haproxy:${BASH_REMATCH[1]}" \
            --tag "$CI_REGISTRY_IMAGE:${BASH_REMATCH[1]}${BASH_REMATCH[2]}" \
            --tag "joramk/haproxy:${BASH_REMATCH[1]}${BASH_REMATCH[2]}" \
-           $DEVEL_TAG $LATEST_TAG \
+           --tag "$CI_REGISTRY_IMAGE:devel" \
+           --tag "joramk/haproxy:devel" \
+           --tag "$CI_REGISTRY_IMAGE:dev" \
+           --tag "joramk/haproxy:dev" \
            --build-arg "VCS_REF=$(git rev-parse --short HEAD)" \
-           --build-arg "BUILD_DATE=$(date -u +'%Y-%m-%dT%H:%M:%SZ')" \
+           --build-arg "BUILD_DATE=$(date -u +"%Y-%m-%dT%H:%M:%SZ")" \
            --build-arg "HAPROXY_BRANCH=$HAPROXY_BRANCH" \
            --build-arg "HAPROXY_MAJOR=$HAPROXY_MAJOR" \
            --build-arg "HAPROXY_VERSION=$HAPROXY_VERSION" \
