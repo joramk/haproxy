@@ -6,6 +6,8 @@ ARG		HAPROXY_MAJOR
 ARG		HAPROXY_VERSION
 ARG		TARGETPLATFORM
 ARG		VCS_REF
+ENV		DATAPLANE_VERSION 2.9.6
+ENV		DATAPLANE_URL https://github.com/haproxytech/dataplaneapi.git
 
 RUN		{	if [[ "$TARGETPLATFORM" == *arm\/v* ]]; then \
 				PLATFORM_SPECIFIC="openssl-dev" ; \
@@ -46,6 +48,12 @@ RUN             {	if [[ "$TARGETPLATFORM" != *arm\/v* ]]; then \
 				make -j$(nproc) && make install_sw ; \
 			fi ; \
                 }
+
+RUN		{	git clone "${DATAPLANE_URL}" dataplaneapi && \
+			cd dataplaneapi && \
+			git checkout "v${DATAPLANE_VERSION}" && \
+			make build && cp build/dataplaneapi /usr/local/sbin/ ; \
+		}
 
 RUN		{	wget -q https://github.com/opentracing/opentracing-cpp/archive/refs/tags/v1.6.0.tar.gz ; \
                         tar xzf v1.6.0.tar.gz ; \
@@ -128,6 +136,8 @@ RUN		{	if [[ "$TARGETPLATFORM" == *arm\/v* ]]; then \
 			ln -s /usr/local/etc/letsencrypt /etc/letsencrypt ; \
 			rm -rf /var/cache/apk/* ; \
 			chmod +x /usr/local/sbin/* ; \
+			touch /usr/local/etc/haproxy/dataplaneapi.yml ; \
+			echo "/lib:/usr/local/lib:/usr/lib" > "/etc/ld-musl-$(uname -m).path" ; \
 		}
 
 RUN		haproxy -vv
