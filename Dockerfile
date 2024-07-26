@@ -6,8 +6,8 @@ ARG		HAPROXY_MAJOR
 ARG		HAPROXY_VERSION
 ARG		TARGETPLATFORM
 ARG		VCS_REF
-ENV		DATAPLANE_VERSION 2.9.6
-ENV		DATAPLANE_URL https://github.com/haproxytech/dataplaneapi.git
+ENV		DATAPLANE_VERSION=2.9.6
+ENV		DATAPLANE_URL=https://github.com/haproxytech/dataplaneapi.git
 
 RUN		{	if [[ "$TARGETPLATFORM" == *arm\/v* ]]; then \
 				PLATFORM_SPECIFIC="openssl-dev" ; \
@@ -34,6 +34,7 @@ RUN		{	if [[ "$TARGETPLATFORM" == *arm\/v* ]]; then \
 				pcre2-dev \
 				wget \
 				perl \
+				go \
 				tar $PLATFORM_SPECIFIC ; \
 		}
 
