@@ -6,6 +6,8 @@ ARG		HAPROXY_MAJOR
 ARG		HAPROXY_VERSION
 ARG		TARGETPLATFORM
 ARG		VCS_REF
+ENV		DATAPLANE_VERSION=2.9.6
+ENV		DATAPLANE_URL=https://github.com/haproxytech/dataplaneapi.git
 
 RUN		{	if [[ "$TARGETPLATFORM" == *arm\/v* ]]; then \
 				PLATFORM_SPECIFIC="openssl-dev" ; \
@@ -32,6 +34,7 @@ RUN		{	if [[ "$TARGETPLATFORM" == *arm\/v* ]]; then \
 				pcre2-dev \
 				wget \
 				perl \
+				go \
 				tar $PLATFORM_SPECIFIC ; \
 		}
 
@@ -46,6 +49,13 @@ RUN             {	if [[ "$TARGETPLATFORM" != *arm\/v* ]]; then \
 				make -j$(nproc) && make install_sw ; \
 			fi ; \
                 }
+
+RUN		{	git clone "${DATAPLANE_URL}" dataplaneapi && \
+			cd dataplaneapi && \
+			git checkout "v${DATAPLANE_VERSION}" && \
+			make build && cp build/dataplaneapi /usr/local/sbin/ ; \
+			make build && mkdir /usr/local/sbin && cp build/dataplaneapi /usr/local/sbin/ ; \
+		}
 
 RUN		{	wget -q https://github.com/opentracing/opentracing-cpp/archive/refs/tags/v1.6.0.tar.gz ; \
                         tar xzf v1.6.0.tar.gz ; \
@@ -101,7 +111,7 @@ LABEL		org.label-schema.build-date=$BUILD_DATE \
 		org.label-schema.vendor="Joram Knaack" \
 		org.label-schema.build-date=$BUILD_DATE \
 		org.label-schema.docker.cmd="docker run -d -p 80:80 -p 443:443 -v haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg joramk/haproxy"
-ENV		container docker
+ENV		container=docker
 
 COPY		--from=build	/usr/local	/usr/local
 COPY				assets		/usr/local
