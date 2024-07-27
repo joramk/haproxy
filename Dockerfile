@@ -35,6 +35,7 @@ RUN		{	if [[ "$TARGETPLATFORM" == *arm\/v* ]]; then \
 				wget \
 				perl \
 				go \
+				jemalloc \
 				tar $PLATFORM_SPECIFIC ; \
 		}
 
@@ -84,7 +85,7 @@ RUN		{	wget -q https://www.haproxy.org/download/$HAPROXY_MAJOR/src/$HAPROXY_BRAN
 			PKG_CONFIG_PATH=/usr/local/lib/pkgconfig make all -j$(nproc) TARGET=linux-musl USE_THREAD=1 USE_LIBCRYPT=1 \  
 				USE_LUA=1 LUA_INC=/usr/include/lua5.4 LUA_LIB=/usr/lib/lua5.4 SUBVERS="-$VCS_REF" \
 				USE_OPENSSL=1 EXTRAVERSION="/${TARGETPLATFORM/linux/docker}" USE_OT=1 OT_USE_VARS=1 OT_LIB=/usr/local/lib OT_INC=/usr/local/include OT_RUNPATH=1 \
-				USE_PCRE2=1 USE_PCRE2_JIT=1 PCREDIR= USE_TFO=1 USE_PROMEX=1 USE_QUIC=1 IGNOREGIT=1 \
+				USE_PCRE2=1 USE_PCRE2_JIT=1 PCREDIR= USE_TFO=1 USE_PROMEX=1 USE_QUIC=1 IGNOREGIT=1 ADDLIB=-ljemalloc \
 				$PLATFORM_SPECIFIC \
 			&& make install ; \    
 		}
@@ -121,6 +122,7 @@ RUN		{	if [[ "$TARGETPLATFORM" == *arm\/v* ]]; then \
 			apk --no-cache --upgrade add \
 				bash \
 				ca-certificates \
+				jemalloc \
 				libffi \
 				python3 \
 				lua5.4 \
