@@ -95,7 +95,7 @@ RUN		{	apk del build-dependencies ; \
 		}
 
 
-FROM		alpine:$ALPINE_VERSION
+FROM		golang:alpine$ALPINE_VERSION
 ARG		HAPROXY_VERSION
 ARG		BUILD_DATE
 ARG		VCS_REF
@@ -110,7 +110,7 @@ LABEL		org.label-schema.build-date=$BUILD_DATE \
 		org.label-schema.vendor="Joram Knaack" \
 		org.label-schema.build-date=$BUILD_DATE \
 		org.label-schema.docker.cmd="docker run -d -p 80:80 -p 443:443 -v haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg joramk/haproxy"
-ENV		container docker
+ENV		container=docker
 
 COPY		--from=build	/usr/local	/usr/local
 COPY				assets		/usr/local
