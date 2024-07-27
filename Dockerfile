@@ -1,6 +1,6 @@
 ARG		ALPINE_VERSION=3.20
 
-FROM		alpine:$ALPINE_VERSION AS build
+FROM		golang:alpine$ALPINE_VERSION AS build
 ARG		HAPROXY_BRANCH
 ARG		HAPROXY_MAJOR
 ARG		HAPROXY_VERSION
@@ -34,7 +34,7 @@ RUN		{	if [[ "$TARGETPLATFORM" == *arm\/v* ]]; then \
 				pcre2-dev \
 				wget \
 				perl \
-				go \
+				jemalloc \
 				tar $PLATFORM_SPECIFIC ; \
 		}
 
@@ -53,7 +53,6 @@ RUN             {	if [[ "$TARGETPLATFORM" != *arm\/v* ]]; then \
 RUN		{	git clone "${DATAPLANE_URL}" dataplaneapi && \
 			cd dataplaneapi && \
 			git checkout "v${DATAPLANE_VERSION}" && \
-			make build && cp build/dataplaneapi /usr/local/sbin/ ; \
 			make build && mkdir /usr/local/sbin && cp build/dataplaneapi /usr/local/sbin/ ; \
 		}
 
@@ -85,7 +84,7 @@ RUN		{	wget -q https://www.haproxy.org/download/$HAPROXY_MAJOR/src/$HAPROXY_BRAN
 			PKG_CONFIG_PATH=/usr/local/lib/pkgconfig make all -j$(nproc) TARGET=linux-musl USE_THREAD=1 USE_LIBCRYPT=1 \  
 				USE_LUA=1 LUA_INC=/usr/include/lua5.4 LUA_LIB=/usr/lib/lua5.4 SUBVERS="-$VCS_REF" \
 				USE_OPENSSL=1 EXTRAVERSION="/${TARGETPLATFORM/linux/docker}" USE_OT=1 OT_USE_VARS=1 OT_LIB=/usr/local/lib OT_INC=/usr/local/include OT_RUNPATH=1 \
-				USE_PCRE2=1 USE_PCRE2_JIT=1 PCREDIR= USE_TFO=1 USE_PROMEX=1 USE_QUIC=1 IGNOREGIT=1 \
+				USE_PCRE2=1 USE_PCRE2_JIT=1 PCREDIR= USE_TFO=1 USE_PROMEX=1 USE_QUIC=1 IGNOREGIT=1 ADDLIB=-ljemalloc \
 				$PLATFORM_SPECIFIC \
 			&& make install ; \    
 		}
@@ -122,6 +121,7 @@ RUN		{	if [[ "$TARGETPLATFORM" == *arm\/v* ]]; then \
 			apk --no-cache --upgrade add \
 				bash \
 				ca-certificates \
+				jemalloc \
 				libffi \
 				python3 \
 				lua5.4 \
@@ -138,6 +138,8 @@ RUN		{	if [[ "$TARGETPLATFORM" == *arm\/v* ]]; then \
 			ln -s /usr/local/etc/letsencrypt /etc/letsencrypt ; \
 			rm -rf /var/cache/apk/* ; \
 			chmod +x /usr/local/sbin/* ; \
+			touch /usr/local/etc/haproxy/dataplaneapi.yml ; \
+			echo "/lib:/usr/local/lib:/usr/lib" > "/etc/ld-musl-$(uname -m).path" ; \
 		}
 
 RUN		haproxy -vv
