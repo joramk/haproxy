@@ -1,6 +1,6 @@
 ARG		ALPINE_VERSION=3.20
 
-FROM		alpine:$ALPINE_VERSION AS build
+FROM		golang:alpine$ALPINE_VERSION AS build
 ARG		HAPROXY_BRANCH
 ARG		HAPROXY_MAJOR
 ARG		HAPROXY_VERSION
@@ -34,7 +34,6 @@ RUN		{	if [[ "$TARGETPLATFORM" == *arm\/v* ]]; then \
 				pcre2-dev \
 				wget \
 				perl \
-				go \
 				jemalloc \
 				tar $PLATFORM_SPECIFIC ; \
 		}
@@ -96,7 +95,7 @@ RUN		{	apk del build-dependencies ; \
 		}
 
 
-FROM		golang:alpine$ALPINE_VERSION
+FROM		alpine:$ALPINE_VERSION
 ARG		HAPROXY_VERSION
 ARG		BUILD_DATE
 ARG		VCS_REF
