@@ -43,7 +43,7 @@ WORKDIR		/usr/src
 RUN             {	if [[ "$TARGETPLATFORM" != *arm\/v* ]]; then \
 				wget -q https://github.com/quictls/openssl/archive/refs/tags/openssl-3.0.14-quic1.tar.gz ; \
 				tar xzf openssl-3.0.14-quic1.tar.gz ; \
-				cd openssl-3.0.14-quic1 ; \
+				cd openssl-openssl-3.0.14-quic1 ; \
 				mkdir -p /usr/local ; \
 				./config no-tests --libdir=lib --prefix=/usr/local ; \
 				make -j$(nproc) && make install_sw ; \
