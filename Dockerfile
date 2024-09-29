@@ -6,7 +6,7 @@ ARG		HAPROXY_MAJOR
 ARG		HAPROXY_VERSION
 ARG		TARGETPLATFORM
 ARG		VCS_REF
-ENV		DATAPLANE_VERSION=2.9.6
+ENV		DATAPLANE_VERSION=3.0.2
 ENV		DATAPLANE_URL=https://github.com/haproxytech/dataplaneapi.git
 
 RUN		{	if [[ "$TARGETPLATFORM" == *arm\/v* ]]; then \
