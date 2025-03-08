@@ -55,22 +55,22 @@ RUN		{	git clone "${DATAPLANE_URL}" dataplaneapi && \
 			make build && mkdir /usr/local/sbin && cp build/dataplaneapi /usr/local/sbin/ ; \
 		}
 
-RUN		{	wget -q https://github.com/opentracing/opentracing-cpp/archive/refs/tags/v1.6.0.tar.gz ; \
-                        tar xzf v1.6.0.tar.gz ; \
-			cd opentracing-cpp-1.6.0 ; \
-			mkdir build && cd build ; \
-			cmake -DCMAKE_INSTALL_PREFIX=/usr/local .. ; \
-			make -j$(nproc) && make install ; \
-			ln -s /usr/local/include/opentracing-c-wrapper-1-1-3 /usr/local/include/opentracing-c-wrapper ; \
-		}
+#RUN		{	wget -q https://github.com/opentracing/opentracing-cpp/archive/refs/tags/v1.6.0.tar.gz ; \
+#                        tar xzf v1.6.0.tar.gz ; \
+#			cd opentracing-cpp-1.6.0 ; \
+#			mkdir build && cd build ; \
+#			cmake -DCMAKE_INSTALL_PREFIX=/usr/local .. ; \
+#			make -j$(nproc) && make install ; \
+#			ln -s /usr/local/include/opentracing-c-wrapper-1-1-3 /usr/local/include/opentracing-c-wrapper ; \
+#		}
 
-RUN		{	wget -q https://github.com/haproxytech/opentracing-c-wrapper/archive/refs/tags/v1.1.3.tar.gz ; \
-                        tar xzf v1.1.3.tar.gz ; \
-			cd opentracing-c-wrapper-1.1.3 ; \
-			./scripts/bootstrap ; \
-			./configure --prefix=/usr/local --with-opentracing=/usr/local ; \
-			make -j$(nproc) && make install ; \
-		}
+#RUN		{	wget -q https://github.com/haproxytech/opentracing-c-wrapper/archive/refs/tags/v1.1.3.tar.gz ; \
+#                        tar xzf v1.1.3.tar.gz ; \
+#			cd opentracing-c-wrapper-1.1.3 ; \
+#			./scripts/bootstrap ; \
+#			./configure --prefix=/usr/local --with-opentracing=/usr/local ; \
+#			make -j$(nproc) && make install ; \
+#		}
 
 RUN		{	wget -q https://www.haproxy.org/download/$HAPROXY_MAJOR/src/$HAPROXY_BRANCH/haproxy-$HAPROXY_VERSION.tar.gz ; \
                         tar xzf haproxy-$HAPROXY_VERSION.tar.gz ; \
