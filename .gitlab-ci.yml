@@ -3,7 +3,7 @@ image: docker:latest
 variables:
   HAPROXY_BRANCH: ""
   HAPROXY_MAJOR: "2.9"
-  HAPROXY_VERSION: "2.9.14"
+  HAPROXY_VERSION: "2.9.15"
 
 services:
   - docker:dind
