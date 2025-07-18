@@ -25,7 +25,7 @@ build-master:
          --platform linux/amd64,linux/arm64,linux/arm/v6,linux/arm/v7 \
          --no-cache \
          --pull \
-         --tag "$CI_REGISTRY_IMAGE:experimental" \
+         --tag "$CI_REGISTRY_IMAGE:latest" \
          --build-arg "VCS_REF=$(git rev-parse --short HEAD)" \
          --build-arg "BUILD_DATE=$(date -u +'%Y-%m-%dT%H:%M:%SZ')" \
          --build-arg "HAPROXY_BRANCH=$HAPROXY_BRANCH" \
@@ -45,7 +45,7 @@ build:
         if [[ "$CI_COMMIT_REF_NAME" == *dev* ]]; then
           DEVEL_TAG="--tag $CI_REGISTRY_IMAGE:devel --tag joramk/haproxy:devel --tag $CI_REGISTRY_IMAGE:dev --tag joramk/haproxy:dev"
         fi
-        if [[ "$CI_COMMIT_REF_NAME" =~ ^v3\.0\. ]]; then
+        if [[ "$CI_COMMIT_REF_NAME" =~ ^v3\.2\. ]]; then
           LATEST_TAG="--tag $CI_REGISTRY_IMAGE:latest --tag joramk/haproxy:latest --tag $CI_REGISTRY_IMAGE:lts --tag joramk/haproxy:lts"
         fi
         if [[ "$CI_COMMIT_REF_NAME" =~ ^v([0-9]+\.[0-9]+)(.*)$ ]]; then
