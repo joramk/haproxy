@@ -1,12 +1,12 @@
-ARG		ALPINE_VERSION=3.20
+ARG		ALPINE_VERSION=3.22
 
 FROM	golang:alpine$ALPINE_VERSION AS build
-ARG		HAPROXY_BRANCH
-ARG		HAPROXY_MAJOR
-ARG		HAPROXY_VERSION
+ARG		HAPROXY_BRANCH=
+ARG		HAPROXY_MAJOR=3.2
+ARG		HAPROXY_VERSION=3.2.3
 ARG		TARGETPLATFORM
 ARG		VCS_REF
-ENV		DATAPLANE_VERSION=3.0.2
+ENV		DATAPLANE_VERSION=3.2.1
 ENV		DATAPLANE_URL=https://github.com/haproxytech/dataplaneapi.git
 
 RUN		{	if [[ "$TARGETPLATFORM" == *arm\/v* ]]; then \
@@ -33,21 +33,21 @@ RUN		{	if [[ "$TARGETPLATFORM" == *arm\/v* ]]; then \
 				linux-headers \
 				pcre2-dev \
 				wget \
-				perl \
+				perl openssl-dev \
 				tar $PLATFORM_SPECIFIC ; \
 		}
 
 WORKDIR		/usr/src
 
-RUN             {	if [[ "$TARGETPLATFORM" != *arm\/v* ]]; then \
-				wget -q https://github.com/quictls/openssl/archive/refs/tags/openssl-3.1.7-quic1.tar.gz ; \
-				tar xzf openssl-3.1.7-quic1.tar.gz ; \
-				cd openssl-openssl-3.1.7-quic1 ; \
-				mkdir -p /usr/local ; \
-				./config no-tests --libdir=lib --prefix=/usr/local ; \
-				make -j$(nproc) && make install_sw ; \
-			fi ; \
-                }
+#RUN             {	if [[ "$TARGETPLATFORM" != *arm\/v* ]]; then \
+#				wget -q https://github.com/quictls/openssl/archive/refs/tags/openssl-3.1.7-quic1.tar.gz ; \
+#				tar xzf openssl-3.1.7-quic1.tar.gz ; \
+#				cd openssl-openssl-3.1.7-quic1 ; \
+#				mkdir -p /usr/local ; \
+#				./config no-tests --libdir=lib --prefix=/usr/local ; \
+#				make -j$(nproc) && make install_sw ; \
+#			fi ; \
+#                }
 
 RUN		{	git clone "${DATAPLANE_URL}" dataplaneapi && \
 			cd dataplaneapi && \
@@ -77,8 +77,8 @@ RUN		{	wget -q https://www.haproxy.org/download/$HAPROXY_MAJOR/src/$HAPROXY_BRAN
 			cd haproxy-$HAPROXY_VERSION ; \
 			if [[ "$TARGETPLATFORM" == *arm\/v* ]]; then \
 				PLATFORM_SPECIFIC="USE_QUIC_OPENSSL_COMPAT=1" ; \
-			else \
-				PLATFORM_SPECIFIC="SSL_INC=/usr/local/include SSL_LIB=/usr/local/lib LDFLAGS=\"-Wl,-rpath,/usr/local/lib\"" ; \
+#			else \
+#				PLATFORM_SPECIFIC="SSL_INC=/usr/local/include SSL_LIB=/usr/local/lib LDFLAGS=\"-Wl,-rpath,/usr/local/lib\"" ; \
 			fi ; \
 			PKG_CONFIG_PATH=/usr/local/lib/pkgconfig make all -j$(nproc) TARGET=linux-musl USE_THREAD=1 USE_LIBCRYPT=1 \  
 				USE_LUA=1 LUA_INC=/usr/include/lua5.4 LUA_LIB=/usr/lib/lua5.4 SUBVERS="-$VCS_REF" \
