@@ -73,11 +73,11 @@ RUN		{	git clone "${DATAPLANE_URL}" dataplaneapi && \
 RUN		{	wget -q https://www.haproxy.org/download/$HAPROXY_MAJOR/src/$HAPROXY_BRANCH/haproxy-$HAPROXY_VERSION.tar.gz ; \
                         tar xzf haproxy-$HAPROXY_VERSION.tar.gz ; \
 			cd haproxy-$HAPROXY_VERSION ; \
-			if [[ "$TARGETPLATFORM" == *arm\/v* ]]; then \
-				PLATFORM_SPECIFIC="USE_QUIC_OPENSSL_COMPAT=1" ; \
+#			if [[ "$TARGETPLATFORM" == *arm\/v* ]]; then \
+#				PLATFORM_SPECIFIC="USE_QUIC_OPENSSL_COMPAT=1" ; \
 #			else \
 #				PLATFORM_SPECIFIC="SSL_INC=/usr/local/include SSL_LIB=/usr/local/lib LDFLAGS=\"-Wl,-rpath,/usr/local/lib\"" ; \
-			fi ; \
+#			fi ; \
 			PKG_CONFIG_PATH=/usr/local/lib/pkgconfig make all -j$(nproc) TARGET=linux-musl USE_THREAD=1 USE_LIBCRYPT=1 \  
 				USE_LUA=1 LUA_INC=/usr/include/lua5.4 LUA_LIB=/usr/lib/lua5.4 SUBVERS="-$VCS_REF" \
 				USE_OPENSSL=1 EXTRAVERSION="/${TARGETPLATFORM/linux/docker}" \
