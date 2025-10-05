@@ -1,12 +1,10 @@
-ARG		ALPINE_VERSION=3.22
-
-FROM	golang:alpine$ALPINE_VERSION AS build
+FROM	golang:alpine AS build
 ARG		HAPROXY_BRANCH=
 ARG		HAPROXY_MAJOR=3.2
 ARG		HAPROXY_VERSION=3.2.3
 ARG		TARGETPLATFORM
 ARG		VCS_REF
-ENV		DATAPLANE_VERSION=3.2.1
+ENV		DATAPLANE_VERSION=3.2.4
 ENV		DATAPLANE_URL=https://github.com/haproxytech/dataplaneapi.git
 
 RUN		{	if [[ "$TARGETPLATFORM" == *arm\/v* ]]; then \
