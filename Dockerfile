@@ -1,6 +1,4 @@
-ARG		ALPINE_VERSION=latest
-
-FROM	golang:alpine$ALPINE_VERSION AS build
+FROM	golang:alpine AS build
 ARG		HAPROXY_BRANCH
 ARG		HAPROXY_MAJOR
 ARG		HAPROXY_VERSION
@@ -94,7 +92,7 @@ RUN		{	apk del build-dependencies ; \
 		}
 
 
-FROM		alpine:$ALPINE_VERSION
+FROM		alpine:latest
 ARG		HAPROXY_VERSION
 ARG		BUILD_DATE
 ARG		VCS_REF
