@@ -1,7 +1,7 @@
-FROM	golang:alpine AS build
+FROM	golang:alpine3.20 AS build
 ARG		HAPROXY_BRANCH
-ARG		HAPROXY_MAJOR
-ARG		HAPROXY_VERSION
+ARG		HAPROXY_MAJOR=3.1
+ARG		HAPROXY_VERSION=3.1.9
 ARG		TARGETPLATFORM
 ARG		VCS_REF
 ENV		DATAPLANE_VERSION=3.2.4
@@ -47,11 +47,11 @@ WORKDIR		/usr/src
 #			fi ; \
 #                }
 
-RUN		{	git clone "${DATAPLANE_URL}" dataplaneapi && \
-			cd dataplaneapi && \
-			git checkout "v${DATAPLANE_VERSION}" && \
-			make build && mkdir /usr/local/sbin && cp build/dataplaneapi /usr/local/sbin/ ; \
-		}
+#RUN		{	git clone "${DATAPLANE_URL}" dataplaneapi && \
+#			cd dataplaneapi && \
+#			git checkout "v${DATAPLANE_VERSION}" && \
+#			make build && mkdir /usr/local/sbin && cp build/dataplaneapi /usr/local/sbin/ ; \
+#		}
 
 #RUN		{	wget -q https://github.com/opentracing/opentracing-cpp/archive/refs/tags/v1.6.0.tar.gz ; \
 #                        tar xzf v1.6.0.tar.gz ; \
@@ -81,7 +81,7 @@ RUN		{	wget -q https://www.haproxy.org/download/$HAPROXY_MAJOR/src/$HAPROXY_BRAN
 			PKG_CONFIG_PATH=/usr/local/lib/pkgconfig make all -j$(nproc) TARGET=linux-musl USE_THREAD=1 USE_LIBCRYPT=1 \  
 				USE_LUA=1 LUA_INC=/usr/include/lua5.4 LUA_LIB=/usr/lib/lua5.4 SUBVERS="-$VCS_REF" \
 				USE_OPENSSL=1 EXTRAVERSION="/${TARGETPLATFORM/linux/docker}" \
-				USE_PCRE2=1 USE_PCRE2_JIT=1 PCREDIR= USE_TFO=1 USE_PROMEX=1 USE_QUIC=1 IGNOREGIT=1 \
+				USE_PCRE2=1 USE_PCRE2_JIT=1 PCREDIR= USE_TFO=1 USE_PROMEX=1 USE_QUIC=0 IGNOREGIT=1 \
 				$PLATFORM_SPECIFIC \
 			&& make install ; \    
 		}
