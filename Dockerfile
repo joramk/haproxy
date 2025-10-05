@@ -92,7 +92,7 @@ RUN		{	apk del build-dependencies ; \
 		}
 
 
-FROM		alpine:$ALPINE_VERSION
+FROM		alpine:latest
 ARG		HAPROXY_VERSION
 ARG		BUILD_DATE
 ARG		VCS_REF
