@@ -47,11 +47,11 @@ WORKDIR		/usr/src
 #			fi ; \
 #                }
 
-RUN		{	git clone "${DATAPLANE_URL}" dataplaneapi && \
-			cd dataplaneapi && \
-			git checkout "v${DATAPLANE_VERSION}" && \
-			make build && mkdir /usr/local/sbin && cp build/dataplaneapi /usr/local/sbin/ ; \
-		}
+#RUN		{	git clone "${DATAPLANE_URL}" dataplaneapi && \
+#			cd dataplaneapi && \
+#			git checkout "v${DATAPLANE_VERSION}" && \
+#			make build && mkdir /usr/local/sbin && cp build/dataplaneapi /usr/local/sbin/ ; \
+#		}
 
 #RUN		{	wget -q https://github.com/opentracing/opentracing-cpp/archive/refs/tags/v1.6.0.tar.gz ; \
 #                        tar xzf v1.6.0.tar.gz ; \
