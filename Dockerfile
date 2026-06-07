@@ -1,7 +1,7 @@
-FROM	golang:alpine AS build
+FROM	alpine:3.22 AS build
 ARG		HAPROXY_BRANCH=
 ARG		HAPROXY_MAJOR=3.2
-ARG		HAPROXY_VERSION=3.2.3
+ARG		HAPROXY_VERSION=3.2.19
 ARG		TARGETPLATFORM
 ARG		VCS_REF
 ENV		DATAPLANE_VERSION=3.2.4
@@ -31,7 +31,7 @@ RUN		{	if [[ "$TARGETPLATFORM" == *arm\/v* ]]; then \
 				linux-headers \
 				pcre2-dev \
 				wget \
-				perl openssl-dev \
+				perl openssl-dev libssl3 libcrypto3 \
 				tar $PLATFORM_SPECIFIC ; \
 		}
 
@@ -47,11 +47,14 @@ WORKDIR		/usr/src
 #			fi ; \
 #                }
 
-RUN		{	git clone "${DATAPLANE_URL}" dataplaneapi && \
-			cd dataplaneapi && \
-			git checkout "v${DATAPLANE_VERSION}" && \
-			make build && mkdir /usr/local/sbin && cp build/dataplaneapi /usr/local/sbin/ ; \
-		}
+#RUN		{	git clone "${DATAPLANE_URL}" dataplaneapi && \
+#			cd dataplaneapi && \
+#			git checkout "v${DATAPLANE_VERSION}" && \
+#			make build && mkdir /usr/local/sbin && cp build/dataplaneapi /usr/local/sbin/ ; \
+#		}
+
+#RUN wget -q https://github.com/haproxytech/dataplaneapi/releases/download/v3.3.5/dataplaneapi_3.3.5_linux_amd64.apk && \
+#	apk install -r dataplaneapi_3.3.5_linux_amd64.apk
 
 #RUN		{	wget -q https://github.com/opentracing/opentracing-cpp/archive/refs/tags/v1.6.0.tar.gz ; \
 #                        tar xzf v1.6.0.tar.gz ; \
@@ -92,7 +95,7 @@ RUN		{	apk del build-dependencies ; \
 		}
 
 
-FROM		alpine:latest
+FROM		alpine:3.22
 ARG		HAPROXY_VERSION
 ARG		BUILD_DATE
 ARG		VCS_REF
@@ -128,7 +131,8 @@ RUN		{	if [[ "$TARGETPLATFORM" == *arm\/v* ]]; then \
 				zlib \
 				certbot \
 				socat \
-				coreutils $PLATFORM_SPECIFIC ; \
+				coreutils \
+				libssl3 libcrypto3 openssl $PLATFORM_SPECIFIC ; \
 			mkdir -p /usr/local/etc/haproxy/letsencrypt /usr/local/etc/letsencrypt ; \
 			ln -s /usr/local/etc/haproxy /etc/haproxy ; \
 			ln -s /usr/local/etc/letsencrypt /etc/letsencrypt ; \
