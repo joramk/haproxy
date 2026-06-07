@@ -1,10 +1,9 @@
-FROM	golang:alpine AS build
-ARG		HAPROXY_BRANCH
-ARG		HAPROXY_MAJOR
-ARG		HAPROXY_VERSION
+FROM	alpine:3.22 AS build
+ARG		HAPROXY_BRANCH=devel
+ARG		HAPROXY_MAJOR=3.5
+ARG		HAPROXY_VERSION=3.5-dev0
 ARG		TARGETPLATFORM
 ARG		VCS_REF
-ENV		DATAPLANE_VERSION=3.2.4
 ENV		DATAPLANE_URL=https://github.com/haproxytech/dataplaneapi.git
 
 RUN		{	if [[ "$TARGETPLATFORM" == *arm\/v* ]]; then \
@@ -37,46 +36,11 @@ RUN		{	if [[ "$TARGETPLATFORM" == *arm\/v* ]]; then \
 
 WORKDIR		/usr/src
 
-#RUN             {	if [[ "$TARGETPLATFORM" != *arm\/v* ]]; then \
-#				wget -q https://github.com/quictls/openssl/archive/refs/tags/openssl-3.1.7-quic1.tar.gz ; \
-#				tar xzf openssl-3.1.7-quic1.tar.gz ; \
-#				cd openssl-openssl-3.1.7-quic1 ; \
-#				mkdir -p /usr/local ; \
-#				./config no-tests --libdir=lib --prefix=/usr/local ; \
-#				make -j$(nproc) && make install_sw ; \
-#			fi ; \
-#                }
-
-#RUN		{	git clone "${DATAPLANE_URL}" dataplaneapi && \
-#			cd dataplaneapi && \
-#			git checkout "v${DATAPLANE_VERSION}" && \
-#			make build && mkdir /usr/local/sbin && cp build/dataplaneapi /usr/local/sbin/ ; \
-#		}
-
-#RUN		{	wget -q https://github.com/opentracing/opentracing-cpp/archive/refs/tags/v1.6.0.tar.gz ; \
-#                        tar xzf v1.6.0.tar.gz ; \
-#			cd opentracing-cpp-1.6.0 ; \
-#			mkdir build && cd build ; \
-#			cmake -DCMAKE_INSTALL_PREFIX=/usr/local .. ; \
-#			make -j$(nproc) && make install ; \
-#			ln -s /usr/local/include/opentracing-c-wrapper-1-1-3 /usr/local/include/opentracing-c-wrapper ; \
-#		}
-
-#RUN		{	wget -q https://github.com/haproxytech/opentracing-c-wrapper/archive/refs/tags/v1.1.3.tar.gz ; \
-#                        tar xzf v1.1.3.tar.gz ; \
-#			cd opentracing-c-wrapper-1.1.3 ; \
-#			./scripts/bootstrap ; \
-#			./configure --prefix=/usr/local --with-opentracing=/usr/local ; \
-#			make -j$(nproc) && make install ; \
-#		}
-
 RUN		{	wget -q https://www.haproxy.org/download/$HAPROXY_MAJOR/src/$HAPROXY_BRANCH/haproxy-$HAPROXY_VERSION.tar.gz ; \
                         tar xzf haproxy-$HAPROXY_VERSION.tar.gz ; \
 			cd haproxy-$HAPROXY_VERSION ; \
 			if [[ "$TARGETPLATFORM" == *arm\/v* ]]; then \
 				PLATFORM_SPECIFIC="USE_QUIC_OPENSSL_COMPAT=1" ; \
-#			else \
-#				PLATFORM_SPECIFIC="SSL_INC=/usr/local/include SSL_LIB=/usr/local/lib LDFLAGS=\"-Wl,-rpath,/usr/local/lib\"" ; \
 			fi ; \
 			PKG_CONFIG_PATH=/usr/local/lib/pkgconfig make all -j$(nproc) TARGET=linux-musl USE_THREAD=1 USE_LIBCRYPT=1 \  
 				USE_LUA=1 LUA_INC=/usr/include/lua5.4 LUA_LIB=/usr/lib/lua5.4 SUBVERS="-$VCS_REF" \
@@ -92,7 +56,7 @@ RUN		{	apk del build-dependencies ; \
 		}
 
 
-FROM		alpine:latest
+FROM		alpine:3.22
 ARG		HAPROXY_VERSION
 ARG		BUILD_DATE
 ARG		VCS_REF
